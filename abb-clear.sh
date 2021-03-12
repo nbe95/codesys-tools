@@ -3,6 +3,8 @@
 # CLI formatter
 bold="\033[1m"
 normal="\033[0m"
+green="\e[32m"
+red="\e[31m"
 
 # Usage
 usage() { echo -e "${bold}Usage:${normal} $0 [-r] [<directory>]" 1>&2; exit 0; }
@@ -19,36 +21,35 @@ done
 shift $((OPTIND - 1))
 
 # Directory provided? If not, use current directory
-dir=$1
+dir="$1"
 if [[ -z "$dir" ]]; then
     dir="."
 fi
 
 # Check if directory exists
 if ! [[ -d "$dir" ]]; then
-    echo -r "${bold}Error:${normal} Directory '$dir' does not exist."
+    echo -e "${bold}Error:${normal} Directory '$dir' does not exist."
     exit 10
 fi
 
 # Find all ABB project directories
-find_options=( -L )
-find_options+=( $dir )
+find_options=()
 if [[ -z "$flag_rec" ]]; then
-    find_options+=( -maxdepth 0 )
+    find_options+=( -maxdepth 1 )
 fi
 find_options+=( -type f )
 find_options+=( -regex '.*\.project\(archive\)?' )
 find_options+=( -printf '%h\n' )
 
 # Regex for any temporary files
-regex="\(.+\.\(opt\|backup\|lock\|~u\)\|DEFAULT\.DFR\)"
+regex="\(DEFAULT\.DFR\|.+\.\(opt\|backup\|lock\|~u\)\)"
 
 # Search each project directory
-find ${find_options[@]} | uniq | while read dir; do
-    echo -e "${bold}Directory:${normal} $dir"
+find -L "$dir" ${find_options[@]} | uniq | while read prj_dir; do
+    echo -e "${bold}Project directory: $prj_dir${normal}"
 
     # Search for temporary files
-    files=$(find $dir -maxdepth 1 -type f -regex $regex -print)
+    files=$(find "$prj_dir" -maxdepth 1 -type f -regex "${prj_dir}/${regex}" -print 2>/dev/null)
 
     # Any files found?
     if [[ "$files" ]]; then
@@ -57,18 +58,18 @@ find ${find_options[@]} | uniq | while read dir; do
         echo "$files" | while read file; do
 
             # Try to remove this file
-            rm $file
+            rm "$file" &>/dev/null
 
             # Print filename and indication mark
             if [[ "$?" -eq "0" ]]; then
-                echo -e "  ${bold}["$'\u2714'"]${normal} Removed $file"
+                echo -e "  [${bold}${green}"$'\u2713'"${normal}] ${file##*/} removed."
             else
-                echo -e "  ${bold}["$'\u274c'"]${normal} Could not remove $file"
+                echo -e "  [${bold}${red}"$'\u2717'"${normal}] ${file##*/} could not be removed."
             fi
          done
     else
         # Print information that no files were found
-        echo -e "  ${bold}[i]${normal} No temporary files found"
+        echo -e "  ${bold}[i]${normal} No temporary files found."
     fi
     echo ""
 done
