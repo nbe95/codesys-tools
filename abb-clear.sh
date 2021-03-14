@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # CLI formatter
-bold="\033[1m"
 normal="\033[0m"
-green="\e[32m"
+bold="\033[1m"
 red="\e[31m"
-yellow="\e[93m"
+green="\e[32m"
 gray="\e[90m"
+yellow="\e[93m"
 
 # Usage
 usage() { echo -e "${bold}Usage:${normal} $0 [-r] [<directory>]" 1>&2; exit 0; }
@@ -15,7 +15,6 @@ usage() { echo -e "${bold}Usage:${normal} $0 [-r] [<directory>]" 1>&2; exit 0; }
 if [[ "$#" -gt "2" ]]; then usage; fi
 while getopts ":hr" opt; do
     case "${opt}" in
-        h) usage ;;
         r) flag_rec=1 ;;
         *) usage ;;
     esac
@@ -23,31 +22,42 @@ done
 shift $((OPTIND - 1))
 
 # Directory provided? If not, use current directory
-dir="$1"
+dir=$(echo "$1" | sed "s:/*$::") # Trim trailing slashes
 if [[ -z "$dir" ]]; then
     dir="."
 fi
 
-# Check if directory exists
+# Check if the given directory exists
 if ! [[ -d "$dir" ]]; then
-    echo -e "${bold}Error:${normal} Directory '$dir' does not exist."
-    exit 10
+    echo -e "[${bold}${red}"$'\u2717'"${normal}] Directory '$dir' does not exist."
+    exit 1
 fi
 
-# Find all ABB project directories
+# Regex to identify ABB project directories
+regex_prjdir=".*\.project\(archive\)?"
+
+# Regex for any temporary files
+regex_tmpfiles="\(DEFAULT\.DFR\|.+\.\(opt\|backup\|lock\|~u\)\)"
+
+# Find any ABB project directories
 find_options=()
 if [[ -z "$flag_rec" ]]; then
     find_options+=( -maxdepth 1 )
 fi
 find_options+=( -type f )
-find_options+=( -regex ".*\.project\(archive\)?" )
-find_options+=( -printf "%h\n" )
+prj_dirs=$(find -L "$dir" ${find_options[@]} -regex "$dir/$regex_prjdir"  -printf "%h\n")
 
-# Regex for any temporary files
-regex="\(DEFAULT\.DFR\|.+\.\(opt\|backup\|lock\|~u\)\)"
+# Catch errors due to missing permissions
+if [[ "$?" -ne "0" ]]; then
+    echo ""
+    echo -e "[${bold}${yellow}!${normal}] Warning: Could not access all specified paths!"
+    echo ""
+fi
 
-# Any project directories found?
-prj_dirs=$(find -L "$dir" ${find_options[@]} | sort -u)
+# Sort results and use any path only once (unique)
+prj_dirs=$(echo "$prj_dirs" | sort -u)
+
+# Check for find results
 if [[ "$prj_dirs" ]]; then
 
     # Search each project directory
@@ -55,7 +65,7 @@ if [[ "$prj_dirs" ]]; then
         echo -e "${bold}Project directory: $prj_dir/${normal}"
 
         # Search for temporary files
-        files=$(find "$prj_dir" -maxdepth 1 -type f -regex "${prj_dir}/${regex}" -print 2>/dev/null)
+        files=$(find "$prj_dir" -maxdepth 1 -type f -regex "${prj_dir}/${regex_tmpfiles}" -print 2>/dev/null)
 
         # Any files found?
         if [[ "$files" ]]; then
@@ -64,13 +74,20 @@ if [[ "$prj_dirs" ]]; then
             echo "$files" | while read file; do
 
                 # Try to remove this file
-                rm "$file" &>/dev/null
+                if command -v trash &> /dev/null; then
+                    # Use `trash` command if available
+                    trash "$file" &> /dev/null
+                else
+                    # Otherwise, remove file by the traditional way (irreversible)
+                    rm "$file" &> /dev/null
+                fi
 
                 # Print filename and indication mark
                 if [[ "$?" -eq "0" ]]; then
                     echo -e "  [${bold}${green}"$'\u2713'"${normal}] ${file##*/} removed."
                 else
                     echo -e "  [${bold}${red}"$'\u2717'"${normal}] ${file##*/} could not be removed."
+                    touch "./.abb-clear-error"
                 fi
              done
         else
@@ -82,5 +99,14 @@ if [[ "$prj_dirs" ]]; then
 else
     # Print information that no project directories were found
     echo -e "[${bold}${yellow}!${normal}] No project directories found."
+    exit 2
 fi
+
+# Exit with error code if error(s) occured during removal
+if [[ -f "./.abb-clear-error" ]]; then
+    rm -f "./.abb-clear-error"
+    exit 10
+fi
+
+# Exit gracefully
 exit 0
