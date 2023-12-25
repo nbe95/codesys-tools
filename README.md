@@ -21,8 +21,9 @@ sudo ln -s ~/.a-b-clear/clear.sh /usr/local/bin/a-b-clear
 
 ## Usage
 
-Run `a-b-clear` with the directory of your choice. Use the `-r` flag to perform
-a recursive lookup and clear all underlying project directories.
+Run `a-b-clear` with the directory of your choice. If not provided, the current
+working directory will be used. Use the `-r` flag to perform a recursive lookup
+and clear all underlying project directories.
 
 > :rotating_light: Any files are identified solely by a regex on their name!
 While I've been using this script a lot for some time and never encountered any
