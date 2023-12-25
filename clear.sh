@@ -9,7 +9,7 @@ gray="\e[90m"
 yellow="\e[93m"
 
 # Usage
-usage() { echo -e "${bold}Usage:${normal} $0 [-r] [<directory>]" 1>&2; exit 0; }
+usage() { echo -e "${bold}Usage:${normal} $(basename "$0") [-r] [<directory>]" 1>&2; exit 0; }
 
 # Parse argument options
 if [[ "$#" -gt "2" ]]; then usage; fi
