@@ -1,12 +1,12 @@
 # a-b-clear
 
 Working with *ABB Automation Builder*? This tool leaves a lot of temporary files
-behind and over time keeps cluttering your drive with them. Once you're
+behind and over time keeps cluttering your hard drive with them. Once you're
 done working on a feature or a project, this simple shell script helps you to
 find those temporary files and delete them accordingly.
 
-> :bulb: If `trash` command is available, the files are moved to the recycle
-bin. Otherwise, they will by irreversible destroyed by `rm`.
+> :bulb: If the `trash` command is available, the files will be moved to your
+recycle bin. Otherwise, they will by irreversible destroyed by `rm`.
 
 ## Installation
 
@@ -24,8 +24,10 @@ sudo ln -s ~/.a-b-clear/clear.sh /usr/local/bin/a-b-clear
 Run `a-b-clear` with the directory of your choice. Use the `-r` flag to perform
 a recursive lookup and clear all underlying project directories.
 
-> :rotating_light: Any files are identified only by regex on their name!
-Currently there's no dry-mode, so think twice before typing and - as usual -
-**USE AT YOUR OWN RISK**.
+> :rotating_light: Any files are identified solely by a regex on their name!
+While I've been using this script a lot for some time and never encountered any
+problems, think twice before typing! You *may* lose some important data.
+Currently there's no dry-mode implemented, thus - as usual - **USE AT YOUR OWN
+RISK**.
 
 ![A nice screenshot](./doc/screenshot.png)
