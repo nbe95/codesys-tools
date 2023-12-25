@@ -33,10 +33,8 @@ if ! [[ -d "$dir" ]]; then
     exit 1
 fi
 
-# Regex to identify ABB project directories
+# Regex to identify ABB project directories and temporary files
 regex_prjdir=".*\.project\(archive\)?"
-
-# Regex for any temporary files
 regex_tmpfiles="\(DEFAULT\.DFR\|.+\.\(opt\|backup\|lock\|~u\)\)"
 
 # Find any ABB project directories
@@ -53,6 +51,9 @@ if [[ "$?" -ne "0" ]]; then
     echo -e "[${bold}${yellow}!${normal}] Warning: Could not access all specified paths!"
     echo ""
 fi
+
+# Define a file as error indicator (survives even subshell magic)
+err_ind=./.a-b-clear-error
 
 # Sort results and use any path only once (unique)
 prj_dirs=$(echo "$prj_dirs" | sort -u)
@@ -87,7 +88,7 @@ if [[ "$prj_dirs" ]]; then
                     echo -e "  [${bold}${green}"$'\u2713'"${normal}] ${file##*/} removed."
                 else
                     echo -e "  [${bold}${red}"$'\u2717'"${normal}] ${file##*/} could not be removed."
-                    touch "./.abb-clear-error"
+                    touch "$err_ind"
                 fi
              done
         else
@@ -103,8 +104,8 @@ else
 fi
 
 # Exit with error code if error(s) occured during removal
-if [[ -f "./.abb-clear-error" ]]; then
-    rm -f "./.abb-clear-error"
+if [[ -f "$err_ind" ]]; then
+    rm -f "$err_ind"
     exit 10
 fi
 
