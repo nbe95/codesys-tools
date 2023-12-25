@@ -22,7 +22,7 @@ done
 shift $((OPTIND - 1))
 
 # Directory provided? If not, use current directory
-dir=$(echo "$1" | sed "s:/*$::") # Trim trailing slashes
+dir=$(realpath "$1")
 if [[ -z "$dir" ]]; then
     dir="."
 fi
@@ -43,10 +43,9 @@ if [[ -z "$flag_rec" ]]; then
     find_options+=( -maxdepth 1 )
 fi
 find_options+=( -type f )
-prj_dirs=$(find -L "$dir" "${find_options[@]}" -regex "$dir/$regex_prjdir" -printf "%h\n")
 
 # Catch errors due to missing permissions
-if [[ "$?" -ne "0" ]]; then
+if ! prj_dirs=$(find -L "$dir" "${find_options[@]}" -regex "$dir/$regex_prjdir" -printf "%h\n"); then
     echo ""
     echo -e "[${bold}${yellow}!${normal}] Warning: Could not access all specified paths!"
     echo ""
@@ -62,7 +61,7 @@ prj_dirs=$(echo "$prj_dirs" | sort -u)
 if [[ "$prj_dirs" ]]; then
 
     # Search each project directory
-    echo "$prj_dirs" | while read prj_dir; do
+    echo "$prj_dirs" | while read -r prj_dir; do
         echo -e "${bold}Project directory: $prj_dir/${normal}"
 
         # Search for temporary files
@@ -72,19 +71,20 @@ if [[ "$prj_dirs" ]]; then
         if [[ "$files" ]]; then
 
             # Iterate over each file
-            echo "$files" | while read file; do
+            echo "$files" | while read -r file; do
 
                 # Try to remove this file
+                err=0
                 if command -v trash &> /dev/null; then
                     # Use `trash` command if available
-                    trash "$file" &> /dev/null
+                    if ! trash "$file" &> /dev/null; then err=1; fi
                 else
                     # Otherwise, remove file by the traditional way (irreversible)
-                    rm "$file" &> /dev/null
+                    if ! rm "$file" &> /dev/null; then err=1; fi
                 fi
 
                 # Print filename and indication mark
-                if [[ "$?" -eq "0" ]]; then
+                if [ $err ]; then
                     echo -e "  [${bold}${green}"$'\u2713'"${normal}] ${file##*/} removed."
                 else
                     echo -e "  [${bold}${red}"$'\u2717'"${normal}] ${file##*/} could not be removed."
