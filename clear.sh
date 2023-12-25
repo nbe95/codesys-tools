@@ -43,7 +43,7 @@ if [[ -z "$flag_rec" ]]; then
     find_options+=( -maxdepth 1 )
 fi
 find_options+=( -type f )
-prj_dirs=$(find -L "$dir" ${find_options[@]} -regex "$dir/$regex_prjdir"  -printf "%h\n")
+prj_dirs=$(find -L "$dir" "${find_options[@]}" -regex "$dir/$regex_prjdir" -printf "%h\n")
 
 # Catch errors due to missing permissions
 if [[ "$?" -ne "0" ]]; then
