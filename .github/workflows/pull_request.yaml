@@ -1,4 +1,4 @@
-name: Lint
+name: Check
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   lint:
-    name: Lint the shell code
+    name: Check the shell code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
