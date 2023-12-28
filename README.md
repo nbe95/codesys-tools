@@ -37,6 +37,6 @@ Run `a-b-clear` with the directory of your choice. If not provided, the current
 working directory will be used. Use the `-r` flag to perform a recursive lookup
 and clear all underlying project directories.
 
-**Example:**
+Example:
 
 ![A nice screenshot](./doc/screenshot.png)
