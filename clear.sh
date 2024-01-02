@@ -22,9 +22,10 @@ done
 shift $((OPTIND - 1))
 
 # Directory provided? If not, use current directory
-dir=$(realpath "$1")
-if [[ -z "$dir" ]]; then
-    dir="."
+if [[ -n "$dir" ]]; then
+    dir="$(realpath "$1")"
+else
+    dir="$(pwd)"
 fi
 
 # Check if the given directory exists
