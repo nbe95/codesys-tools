@@ -8,17 +8,17 @@ find those temporary files and delete them accordingly.
 > :bulb: If the `trash` command is available, the files will be moved to your
 recycle bin. Otherwise, they will by irreversible destroyed by `rm`.
 
-**:rotating_light: Important notes: :rotating_light:**
+**Important notes:**
 
 * I'm not associated with *ABB* or the *Automation Builder* in any form. I have
-been working with this tool for years and personally find this script to be
-useful.
+  been working with this tool for years and personally find this script to be
+  useful.
 * Any project files are identified solely by a regex on their name! While I've
-been using this script a lot for some time and never encountered any problems
-with this mechanism, think twice before typing! You may lose some important
-data!
-* **This tool deletes files.** Currently there's no dry-mode implemented. Thus -
-as usual - **USE AT YOUR OWN RISK**.
+  been using this script a lot for some time and never encountered any problems
+  with this mechanism, think twice before typing! You may lose some important
+  data.
+* :rotating_light: **This tool deletes files.** As there's currently no dry-mode
+  implemented, **USE AT YOUR OWN RISK**. :rotating_light:
 
 ## Installation
 
@@ -28,7 +28,7 @@ Example:
 
 ```sh
 git clone https://github.com/nbe95/a-b-clear.git ~/.a-b-clear
-sudo ln -s ~/.a-b-clear/clear.sh /usr/local/bin/a-b-clear
+sudo ln -s ~/.a-b-clear/clear.sh /usr/local/bin/abclear
 ```
 
 ## Usage
