@@ -16,7 +16,7 @@ recycle bin. Otherwise, they will by irreversible destroyed by `rm`.
 * Any project files are identified solely by a regex on their name! While I've
   been using this script a lot for some time and never encountered any problems
   with this mechanism, think twice before typing! You may lose some important
-  data!
+  data.
 * :rotating_light: **This tool deletes files.** As there's currently no dry-mode
   implemented, **USE AT YOUR OWN RISK**. :rotating_light:
 
