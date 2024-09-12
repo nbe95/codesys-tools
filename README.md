@@ -35,7 +35,7 @@ hard drive. Once you're done working on a feature or a project, this script help
 files and delete them accordingly.
 
 > [!CAUTION]
-> This tool deletes files. As there's currently no dry-mode implemented, **use at  your own risk**.
+> This tool deletes files. As there's currently no dry-mode implemented, **use at  your own risk**!
 
 ```powershell
 .\remove-tmp-files.ps1 [-Recursive] .\project_dir1, .\project_dir2, ...
