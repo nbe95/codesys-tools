@@ -11,24 +11,24 @@ on any Windows host.
 > manufacturer or retailer in any form. I have been working with this tools for years and personally
 > find them to be useful.
 
-## Declaration Checker
+## :mag: Declaration Checker
 
 Checks variable prefixes in code export files according to the Codesys recommendations on
 [Hungarian Notation](https://content.helpme-codesys.com/en/LibDevSummary/varnames.html).
 
 ```powershell
-./check-declarations.ps1 [-Level Info] .\dir1\file1.exp, .\dir2, ...
+.\check-declarations.ps1 [-Level Info] .\dir1\file1.exp, .\dir2, ...
 ```
 
-## Code Formatter
+## :pencil2: Code Formatter
 
 Formats code export files according to common conventions and senseful recommendations.
 
 ```powershell
-./format-code.ps1 .\dir1\file1.exp, .\dir2, ...
+.\format-code.ps1 .\dir1\file1.exp, .\dir2, ...
 ```
 
-## Temporary Files Remover
+## :wastebasket: Temporary Files Remover
 
 Removes all those temporary files left by Codesys or associated tools, which keep cluttering your
 hard drive. Once you're done working on a feature or a project, this script helps you to find those
@@ -38,7 +38,7 @@ files and delete them accordingly.
 > This tool deletes files. As there's currently no dry-mode implemented, **use at  your own risk**.
 
 ```powershell
-./remove-tmp-files.ps1 [-Recursive] .\project_dir1, .\project_dir2, ...
+.\remove-tmp-files.ps1 [-Recursive] .\project_dir1, .\project_dir2, ...
 ```
 
 ```sh
