@@ -9,10 +9,22 @@ on:
       - ready_for_review
 
 jobs:
-  lint:
-    name: Check the shell code
+  check-sh:
+    name: Check shell code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run ShellCheck
+      - name: Run shellcheck
         uses: ludeeus/action-shellcheck@master
+
+  check-ps:
+    name: Analyze PowerShell code
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run PSScriptAnalyzer
+        uses: microsoft/psscriptanalyzer-action@v1.0
+        with:
+          path: .\
+          recurse: true
+          output: results.sarif
