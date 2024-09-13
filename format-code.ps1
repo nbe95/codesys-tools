@@ -2,7 +2,7 @@ param (
     [string[]]$Targets = (".\")
 )
 
-enum Result { Ok, Changed, Ignored }
+enum Result { Ok; Changed; Ignored }
 
 Function Format-CodesysFile {
     param([string] $File)
