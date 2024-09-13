@@ -3,7 +3,7 @@ param (
     [ValidateSet("Error", "Warning", "Info", "Debug")][string] $Level = "Info"
 )
 
-enum LogLevel { Error, Warning, Info, Debug }
+enum LogLevel { Error; Warning; Info; Debug }
 
 function Get-CenteredText {
     param(
