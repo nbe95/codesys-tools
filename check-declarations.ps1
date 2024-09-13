@@ -3,7 +3,7 @@ param (
     [ValidateSet("Error", "Warning", "Info", "Debug")][string] $Level = "Info"
 )
 
-enum LogLevel { Error; Warning; Info; Debug; }
+enum LogLevel { Error, Warning, Info, Debug }
 
 function Get-CenteredText {
     param(
@@ -55,41 +55,19 @@ function Write-Log {
 $TypeMapping = @{   # Will be extended at runtime by custom types (FBs, structs, enums)
     # Basic data types
     BOOL = "x";
-    BYTE = "by";
-    SINT = "si";
-    INT = "i";
-    DINT = "di";
-    USINT = "usi";
-    UINT = "ui";
-    UDINT = "udi";
-    WORD = "w";
-    DWORD = "dw";
-    REAL = "r";
-    LREAL = "lr";
-    DATE = "d";
-    TIME = "tim";
-    TIME_OF_DAY = "tod";
-    TOD = "tod";
-    DATE_AND_TIME = "dt";
-    DT = "dt";
+    BYTE = "by"; WORD = "w"; DWORD = "dw";
+    SINT = "si"; INT = "i"; DINT = "di";
+    USINT = "usi"; UINT = "ui"; UDINT = "udi";
+    REAL = "r"; LREAL = "lr";
+    DATE = "d"; TIME = "tim"; TIME_OF_DAY = "tod"; TOD = "tod"; DATE_AND_TIME = "dt"; DT = "dt";
     STRING = "s";
 
     # POUs from stdlib
-    TON = "TON";
-    TOF = "TOF";
-    TP = "TP";
-    RTC = "RTC";
-    R_TRIG = "RTRIG";
-    F_TRIG = "FTRIG";
-    CTU = "CTU";
-    CTD = "CTD";
-    CTUD = "CTUD";
-    RS = "RS";
-    SR = "SR";
-    SEMA = "SEMA";
-    BLINK = "BLINK";
-    PACK = "fb";
-    UNPACK = "fb";
+    TON = "TON"; TOF = "TOF"; TP = "TP"; RTC = "RTC";
+    R_TRIG = "RTRIG"; F_TRIG = "FTRIG";
+    CTU = "CTU"; CTD = "CTD"; CTUD = "CTUD";
+    RS = "RS"; SR = "SR"; SEMA = "SEMA";
+    BLINK = "BLINK"; PACK = "fb"; UNPACK = "fb";
 }
 $TypeAliases = @{}  # Will be extended at runtime by custom aliases
 
@@ -116,7 +94,7 @@ function Test-CodesysFile {
     $Warnings = 0
     $Errors = 0
 
-    $Content = Get-Content -Raw $File
+    $Content = Get-Content -Raw -Path $File
     if ($Content.Length -gt 0) {
 
         # Check POU naming conventions
@@ -141,7 +119,7 @@ function Test-CodesysFile {
 
             # Extract and check each distinct declaration
             $Context = $_.Groups["context"]
-            $ContentWithoutComments = $_ -Replace "\(\*.*?\*\)", ""
+            $ContentWithoutComments = $_ -replace "\(\*.*?\*\)", ""
             $Declarations = Get-AllMatchingBlocks $ContentWithoutComments "(?smi)([\w]+\s*(?:AT\s+[%\w.*]+)?\s*:\s*[^;]*?\s*;)"
             $Declarations | ForEach-Object {
 
@@ -175,8 +153,8 @@ function Test-VarDeclaration {
         # $Init = $Matches["init"]
 
         # Check naming conventions
-        $Underscores = (Select-String -InputObject $Name -Pattern "_" -AllMatches).Matches.Count
-        if ($Underscores -gt 1) {
+        $NumUnderscores = (Select-String -InputObject $Name -Pattern "_" -AllMatches).Matches.Count
+        if ($NumUnderscores -gt 1) {
             Write-Log Warning "Name contains more than one underscore." $File $Var
             $Warnings++;
         }
@@ -263,8 +241,8 @@ function Get-ValidVarPrefixes {
 
 function Read-CustomTypesAndAliases {
     param([string] $File)
-    $Content = Get-Content -Raw $File
-    $ContentWithoutComments = $Content -Replace "\(\*.*?\*\)", ""
+    $Content = Get-Content -Raw -Path $File
+    $ContentWithoutComments = $Content -replace "\(\*.*?\*\)", ""
 
     # Store names and desired prefix of function blocks
     $FunctionBlocks = Get-AllMatchingBlocks $ContentWithoutComments "(?mi)^FUNCTION_BLOCK\s+(?:[\w\d]+)"

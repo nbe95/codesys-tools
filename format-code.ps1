@@ -2,15 +2,17 @@ param (
     [string[]]$Targets = (".\")
 )
 
+enum Result { Ok, Changed, Ignored }
+
 Function Format-CodesysFile {
     param([string] $File)
 
-    $Content = Get-Content -Raw $File
+    $Content = Get-Content -Raw -Path $File
     if ($Content.Length -eq 0) {
-        Return 0
+        Return [Result]::Ok
     }
     if ($Content.ToUpper().Contains("@NOFORMAT")) {
-        Return 2
+        Return [Result]::Ignored
     }
 
     $Formatted = $Content
@@ -67,16 +69,16 @@ Function Format-CodesysFile {
 
     # Because of performance and encoding issues, for the following operations each line must be processed individually
     $Lines = @()
-    foreach ($Line in $Formatted -split "\r\n") {
+    $Formatted -split "\r\n" | ForEach-Object {
 
         # Skip any non-code-related lines
-        if ($Line -match '^(?!VISUALISATION|_|\(\* @).') {
+        if ($_ -match '^(?!VISUALISATION|_|\(\* @).') {
 
             # Make sure each comma has no leading space and is followed by exactly one space, unless at the end of a line
-            $FormattedLine = $Line -replace '\s*?,(?!\t|\r?\n|$)(?: +)?', ', '
+            $FormattedLine = $_ -replace '\s*?,(?!\t|\r?\n|$)(?: +)?', ', '
             $Lines += $FormattedLine
         } else {
-            $Lines += $Line
+            $Lines += $_
         }
     }
     $Formatted = $Lines -join [Environment]::NewLine
@@ -85,9 +87,9 @@ Function Format-CodesysFile {
     # Check if anything was modified
     if ((Compare-Object $Content $Formatted -SyncWindow 0).Length -ne 0) {
         Set-Content $File $Formatted -NoNewline
-        Return 1
+        Return [Result]::Changed
     }
-    Return 0
+    Return [Result]::Ok
 }
 
 
@@ -105,20 +107,20 @@ Get-ChildItem -Path $Targets -File -Filter *.exp -Exclude _* -FollowSymLink -Rec
     $ResultStyle = @{ForegroundColor = "Green"}
     $CountAll++
 
-    If ($Result -eq 1) {
+    If ($Result -eq [Result]::Changed) {
         $ResultStr = "CHANGE"
         $ResultStyle = @{ForegroundColor = "Red"}
         $CountChanged++
     }
 
-    If ($Result -eq 2) {
+    If ($Result -eq [Result]::Ignored) {
         $ResultStr = "IGNORE"
         $ResultStyle = @{ForegroundColor = "Yellow"}
         $CountIgnored++
     }
 
     Write-Host "[" -NoNewline -ForegroundColor "DarkGray"
-    Write-Host ("{0}" -f $ResultStr) -NoNewline @ResultStyle
+    Write-Host $ResultStr -NoNewline @ResultStyle
     Write-Host "] " -NoNewline -ForegroundColor "DarkGray"
     Write-Host $_.FullName
 }
