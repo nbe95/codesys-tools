@@ -1,5 +1,5 @@
 param (
-    [string[]]$Targets = (".\")
+    [switch] $Quiet = $false,
 )
 
 enum Result { Ok; Changed; Ignored }
@@ -119,15 +119,22 @@ Get-ChildItem -Path $Targets -File -Filter *.exp -Exclude _* -FollowSymLink -Rec
         $CountIgnored++
     }
 
-    Write-Host "[" -NoNewline -ForegroundColor "DarkGray"
-    Write-Host $ResultStr -NoNewline @ResultStyle
-    Write-Host "] " -NoNewline -ForegroundColor "DarkGray"
-    Write-Host $_.FullName
+    if (-not $Quiet) {
+        Write-Host "[" -NoNewline -ForegroundColor "DarkGray"
+        Write-Host $ResultStr -NoNewline @ResultStyle
+        Write-Host "] " -NoNewline -ForegroundColor "DarkGray"
+    }
+    if (-not $Quiet -or $Result -eq [Result]::Changed) {
+        Write-Host $File
+    }
 }
 
 # Print overall result
-Write-Host ("`n{0} file(s) processed, {1} formatted, {2} ignored." -f $CountAll, $CountChanged, $CountIgnored)
+if (-not $Quiet) {
+    Write-Host ("`n{0} file(s) processed, {1} formatted, {2} ignored." -f $CountAll, $CountChanged, $CountIgnored)
+}
 
+# Exit successfully if no files were changed
 if ($CountChanged -gt 0) {
     exit 1
 }
