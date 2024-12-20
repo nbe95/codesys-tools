@@ -66,6 +66,9 @@ Function Format-CodesysFile {
         $Formatted = $Formatted -replace "(?!\W)(T(?:IME)?)#((?:\d+[dhms]+)+)?(\d+)$_", "`$1#`$2`$3$_"
     }
 
+    # Remove empty VAR blocks
+    $Formatted = $Formatted -replace "(?m)^VAR([^\n]+)?\n\s*END_VAR\r?\n?", ""
+
 
     # Remove leading/trailing space and spaces in round/square brackets
     $Formatted = $Formatted -replace '(?<=\r?\n) +', ''
