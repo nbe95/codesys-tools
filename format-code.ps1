@@ -1,6 +1,7 @@
 param (
     [string[]] $Targets = ("."),
     [switch] $Quiet = $false,
+    [switch] $DryRun = $false
 )
 
 enum Result { Ok; Changed; Ignored }
@@ -86,8 +87,10 @@ Function Format-CodesysFile {
     Remove-Variable Lines
 
     # Check if anything was modified
-    if ((Compare-Object $Content $Formatted -SyncWindow 0).Length -ne 0) {
-        Set-Content $File $Formatted -NoNewline
+        # Save formatted file if not running dryly
+        if (-not $DryRun) {
+            Set-Content $File $Formatted -NoNewline
+        }
         Return [Result]::Changed
     }
     Return [Result]::Ok
