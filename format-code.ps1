@@ -50,6 +50,22 @@ Function Format-CodesysFile {
     $Formatted = $Formatted -creplace '(?<!\w)NOT\s+(?!_)((?>[\w.]+(?>(?>\[(?>\((?<array>)|[^[\]]+|\](?<-array>))*(?(array)(?!))\]|\((?>\((?<expr>)|[^()]+|\)(?<-expr>))*(?(expr)(?!))\))?\.?)*)+)', 'NOT($1)'
     $Formatted = $Formatted -creplace 'NOT\s+\(', 'NOT('
 
+    # Use capital data type prefixes and small time units (e.g. T#1s)
+    @(
+        "BYTE", "SINT", "USINT",
+        "WORD", "INT", "DINT",
+        "DWORD", "DINT", "UDINT",
+        "TIME", "T",
+        "TIME_OF_DAY", "TOD",
+        "DATE", "D",
+        "DATE_AND_TIME", "DT"
+    ) | ForEach-Object {
+        $Formatted = $Formatted -replace "$_#(\w+)", "$_#`$1"
+    }
+    @("d", "h", "m", "s", "ms") | ForEach-Object {
+        $Formatted = $Formatted -replace "(?!\W)(T(?:IME)?)#((?:\d+[dhms]+)+)?(\d+)$_", "`$1#`$2`$3$_"
+    }
+
 
     # Remove leading/trailing space and spaces in round/square brackets
     $Formatted = $Formatted -replace '(?<=\r?\n) +', ''
