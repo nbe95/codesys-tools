@@ -1,5 +1,6 @@
 param (
     [string[]] $Targets = @(".\"),
+    [switch] $Quiet = $false,
     [ValidateSet("Error", "Warning", "Info", "Debug")][string] $Level = "Info"
 )
 
@@ -297,21 +298,27 @@ $ExpFiles = Get-ChildItem -Path $Targets -File -Filter *.exp -Exclude _* -Follow
 
 # Scan all POUs for custom instancable types
 $ExpFiles | ForEach-Object {
-    Read-CustomTypesAndAliases -File $_.FullName
+    Read-CustomTypesAndAliases -File (Resolve-Path -Relative $_)
 }
 
 # Perform actual check
 $ExpFiles | ForEach-Object {
-    $Result = Test-CodesysFile -File $_.FullName
+    $Result = Test-CodesysFile -File (Resolve-Path -Relative $_)
     $CountAll++
     $CountWarnings += $Result[0]
     $CountErrors += $Result[1]
 }
 
 # Print overall result
-Write-Host ("`n{0} file(s) processed, {1} error(s), {2} warning(s)." -f $CountAll, $CountErrors, $CountWarnings)
+if (-not $Quiet) {
+    Write-Host ("`n{0} file(s) processed, {1} error(s), {2} warning(s)." -f $CountAll, $CountErrors, $CountWarnings)
+}
 
+# Exit successfully if no warnings and errors were found
 if ($CountErrors -gt 0) {
+    exit 2
+}
+if ($CountWarnings -gt 0) {
     exit 1
 }
 exit 0
