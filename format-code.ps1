@@ -87,6 +87,7 @@ Function Format-CodesysFile {
     Remove-Variable Lines
 
     # Check if anything was modified
+    if ((Compare-Object $Content $Formatted -SyncWindow 0 -CaseSensitive).Length -ne 0) {
         # Save formatted file if not running dryly
         if (-not $DryRun) {
             Set-Content $File $Formatted -NoNewline
