@@ -35,28 +35,9 @@ Function Format-CodesysFile {
     $Formatted = $Formatted -replace '(?<![\s\(+*]|^)([+*])(?![+*\)])', ' $1'
     $Formatted = $Formatted -replace '(?<![+*\(])([+*])(?![\s\)+*]|$)', '$1 '
 
-    # Remove leading/trailing space and spaces in round/square brackets
-    $Formatted = $Formatted -replace '(?<=\r?\n) +', ''
-    $Formatted = $Formatted -replace '[\t ]+(?=\r?\n)', ''
-    $Formatted = $Formatted -replace '(?<=[\(\[]) +', ''
-    $Formatted = $Formatted -replace ' +(?=[\)\]])', ''
-
     # Open and close comments with a single space
     $Formatted = $Formatted -replace '\(\*(?!$|\r?\n)\s*', '(* '
     $Formatted = $Formatted -replace '\s*(?<!^|\n)\*\)', ' *)'
-
-    # Remove multiple spaces and those surrounded by tabs
-    $Formatted = $Formatted -replace '(?:(?<=\t) +| +(?=\t))', ''
-    $Formatted = $Formatted -replace ' +', ' '
-
-    # Remove spaces in front of semicolons
-    $Formatted = $Formatted -replace '[\t ]+(?=;)', ''
-
-    # Remove superfluous line breaks
-    $Formatted = $Formatted -replace '(\r?\n)+(\(\* @(?:END_DECLARATION|OBJECT_END) .+? \*\))', '$1$2'
-    $Formatted = $Formatted -replace '(\r?\n)+(END_(?:VAR|TYPE))', '$1$2'
-    $Formatted = $Formatted -replace '(\r?\n){3,}(END_(?:PROGRAM|FUNCTION_BLOCK|FUNCTION))', '$1$2'
-    $Formatted = $Formatted -replace '((?:\r?\n){3})(?:\r?\n)+', '$1'
 
     # Remove unnecessary semicolons after specific keywords
     $Formatted = $Formatted -replace '(?<=THEN|END_IF|END_FOR|END_WHILE|END_REPEAT|END_CASE);', ''
@@ -66,8 +47,28 @@ Function Format-CodesysFile {
     $Formatted = $Formatted -replace 'ARRAY\s*?\[(.+?)\]', 'ARRAY[$1]'
 
     # Only use NOT operator with parentheses and remove any space between
-    $Formatted = $Formatted -creplace '(?<=\W)NOT\s+(?!_)((?>\w+(?>(?>\[(?>\((?<array>)|[^[\]]+|\](?<-array>))*(?(array)(?!))\]|\((?>\((?<expr>)|[^()]+|\)(?<-expr>))*(?(expr)(?!))\))?\.?)*)+)', 'NOT($1)'
+    $Formatted = $Formatted -creplace '(?<!\w)NOT\s+(?!_)((?>[\w.]+(?>(?>\[(?>\((?<array>)|[^[\]]+|\](?<-array>))*(?(array)(?!))\]|\((?>\((?<expr>)|[^()]+|\)(?<-expr>))*(?(expr)(?!))\))?\.?)*)+)', 'NOT($1)'
     $Formatted = $Formatted -creplace 'NOT\s+\(', 'NOT('
+
+
+    # Remove leading/trailing space and spaces in round/square brackets
+    $Formatted = $Formatted -replace '(?<=\r?\n) +', ''
+    $Formatted = $Formatted -replace '[\t ]+(?=\r?\n)', ''
+    $Formatted = $Formatted -replace '(?<=[\(\[]) +', ''
+    $Formatted = $Formatted -replace ' +(?=[\)\]])', ''
+
+    # Remove superfluous line breaks
+    $Formatted = $Formatted -replace '(\r?\n)+(\(\* @(?:END_DECLARATION|OBJECT_END) .+? \*\))', '$1$2'
+    $Formatted = $Formatted -replace '(\r?\n)+(END_(?:VAR|TYPE))', '$1$2'
+    $Formatted = $Formatted -replace '(\r?\n){3,}(END_(?:PROGRAM|FUNCTION_BLOCK|FUNCTION))', '$1$2'
+    $Formatted = $Formatted -replace '((?:\r?\n){3})(?:\r?\n)+', '$1'
+
+    # Remove multiple spaces and those surrounded by tabs
+    $Formatted = $Formatted -replace '(?:(?<=\t) +| +(?=\t))', ''
+    $Formatted = $Formatted -replace ' +', ' '
+
+    # Remove spaces in front of semicolons
+    $Formatted = $Formatted -replace '[\t ]+(?=;)', ''
 
     # Because of performance and encoding issues, for the following operations each line must be processed individually
     $Lines = @()
