@@ -82,6 +82,10 @@ Function Format-CodesysFile {
         }
     }
 
+    # Use consistent spacing for UDTs and enumerations
+    $Formatted = $Formatted -replace "(?s)((?<!\w)TYPE\s+\w+\s*:)\s*\(\*(.*)\*\)\s*(?=\((?!\*)|STRUCT)", "(*`$2*)`r`n`$1`r`n" # First, move any inline-comment above type/enum declaration
+    $Formatted = $Formatted -replace "(?s)TYPE\s+(\w+)\s*:\s*(\((?!\*)|STRUCT)(?:\r?\n)*", "TYPE `$1 :`r`n`$2`r`n"
+    $Formatted = $Formatted -replace "\s*(\);|END_STRUCT)\s+END_TYPE;?", "`r`n`$1`r`nEND_TYPE"
 
     # Remove leading/trailing space and spaces in round/square brackets
     $Formatted = $Formatted -replace '(?<=\r?\n) +', ''
