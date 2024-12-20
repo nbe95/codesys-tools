@@ -1,4 +1,5 @@
 param (
+    [string[]] $Targets = ("."),
     [switch] $Quiet = $false,
 )
 
@@ -98,10 +99,11 @@ $CountChanged = 0
 $CountIgnored = 0
 
 # Search the given target path(s) recursively for export files
-Get-ChildItem -Path $Targets -File -Filter *.exp -Exclude _* -FollowSymLink -Recurse | ForEach-Object {
+Get-ChildItem -Path $Targets -File -Include *.exp -Exclude _*, -FollowSymLink -Recurse | ForEach-Object {
 
-    # Format code and print result
-    $Result = Format-CodesysFile $_.FullName
+    # Format code file and print result
+    $File = Resolve-Path -Relative $_
+    $Result = Format-CodesysFile -File $File
 
     $ResultStr = "  OK  "
     $ResultStyle = @{ForegroundColor = "Green"}
