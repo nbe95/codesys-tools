@@ -20,12 +20,12 @@ Function Format-CodesysFile {
     $Formatted = $Content
 
     # Enforce spaces around operators :=, =>, <=, >=, <>, =, <, >
-    $Formatted = $Formatted -replace ' *?(:=|=>|<=|>=|<>|=|<(?!=|-)|(?<!=|-)>) *?', ' $1 '
+    $Formatted = $Formatted -replace ' *(:=|(?<!=|<)=>|<=(?!=|>)|>=|<>|(?<!=)=(?!=|>)|<(?!=|-)|(?<!=|-)>) *', ' $1 '
 
-    # Enforce spaces before/after - and / (unless in comments, strings or constructed type like DT#1970-01-01-00:00:00)
+    # Enforce spaces before/after - and / (unless in arrows, comments, strings or constructed type like DT#1970-01-01-00:00:00)
     # Note: Find and mark relevant chars first, then replace them in a second step
     $Formatted = $Formatted -replace '((?:\(\*(?:.|\r?\n)*?\*\)|''.*?''))|[\t ]*\/[\t ]*', '$1{slash}'
-    $Formatted = $Formatted -replace '((?:\(\*(?:.|\r?\n)*?\*\)|''.*?''|#[\d\-_:]+))|(?<!\W|\n)[\t ]*\-[\t ]*', '$1{hyphen}'
+    $Formatted = $Formatted -replace '((?:\(\*(?:.|\r?\n)*?\*\)|''.*?''|#[\d\-_:]+))|(?<!\W|\n)[\t ]*\-(?!>|-)[\t ]*', '$1{hyphen}'
 
     $Formatted = $Formatted -replace '((?:\(\*(?:.|\r?\n)*?\*\)|''.*?''|#[\d\-_:]+))(?:{(?:slash|hyphen)})+', '$1'
     $Formatted = $Formatted -replace '{hyphen}', ' - '
