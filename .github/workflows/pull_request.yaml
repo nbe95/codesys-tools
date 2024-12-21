@@ -34,6 +34,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Run tests for declaration checker
+        shell: pwsh
+        run: |
+          .\tests\check-declarations\run.ps1
       - name: Run tests for code formatter
         shell: pwsh
         run: |
