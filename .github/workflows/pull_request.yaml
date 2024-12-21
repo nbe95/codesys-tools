@@ -28,3 +28,13 @@ jobs:
           path: .\
           recurse: true
           output: results.sarif
+
+  test-ps:
+    name: Run PowerShell tests
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests for code formatter
+        shell: pwsh
+        run: |
+          .\tests\format-code\run.ps1
