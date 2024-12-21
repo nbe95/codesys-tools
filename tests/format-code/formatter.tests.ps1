@@ -4,14 +4,29 @@ param (
 
 BeforeAll {
     $Root = Resolve-Path -Relative "$PSScriptRoot\..\..\"
-    $Expected = Get-Content -Path ($File -Replace "\\tmp\\", "\\expected\\") -Raw
+    $TmpFile = $File -Replace "\\input\\", "\tmp\"
+    $ExpectedFile = $File -Replace "\\input\\", "\expected\"
+
+    $Original = Get-Content -Path $File -Raw
+    $Expected = Get-Content -Path $ExpectedFile -Raw
 }
 
-Describe "File - <File>" {
-    It "Run and check formatter result" {
-        PowerShell -File "$Root\format-code.ps1" $File
+Describe "Test file - <File>" {
+    BeforeEach {
+        Copy-Item -Path $File -Destination $TmpFile
+    }
 
-        $Result = Get-Content -Path $File -Raw
+    It "Run and check formatter result" {
+        Invoke-Expression "$Root\format-code.ps1 $TmpFile"
+
+        $Result = Get-Content -Path $TmpFile -Raw
         $Result | Should -BeExactly $Expected
+    }
+
+    It "Don't touch anything when running in dry mode" {
+        Invoke-Expression "$Root\format-code.ps1 $TmpFile -Dry"
+
+        $Result = Get-Content -Path $TmpFile -Raw
+        $Result | Should -BeExactly $Original
     }
 }

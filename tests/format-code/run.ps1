@@ -1,10 +1,10 @@
 Remove-Item -Recurse -Path "$PSScriptRoot\tmp" -ErrorAction SilentlyContinue
-Copy-Item -Recurse -Path "$PSScriptRoot\input" -Destination "$PSScriptRoot\tmp"
+New-Item -Type Directory -Path "$PSScriptRoot\tmp" | Out-Null
 
-$Files = Get-ChildItem -Path "$PSScriptRoot\tmp" -Filter "*.exp" -Recurse
+$Files = Get-ChildItem -Path "$PSScriptRoot\input" -Filter "*.exp" -Recurse
 $Data = $Files | ForEach-Object {
     @{ File = $_.FullName }
 }
 
-$Container = New-PesterContainer -Path "./formatter.tests.ps1" -Data $Data
+$Container = New-PesterContainer -Path "$PSScriptRoot\formatter.tests.ps1" -Data $Data
 Invoke-Pester -Container $Container -Output Detailed
