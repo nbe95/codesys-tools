@@ -69,23 +69,21 @@ Function Format-CodesysFile {
     # Remove empty VAR blocks
     $Formatted = $Formatted -replace "(?m)^VAR([^\n]+)?\n\s*END_VAR\r?\n?", ""
 
-    # Use exactly one tab for indentation of any VAR and TYPE/STRUCT block
-    Select-String -InputObject $Formatted -Pattern "(?smi)^(?<container>VAR|TYPE)(?:_\w+)?.*?\n+(?:STRUCT(?:\r?\n)*)?(?<content>.+?)\s*(?:END_STRUCT\s*)?^END_\<container>" -AllMatches | ForEach-Object {
-        $_.Matches | ForEach-Object {
-
-            # Process each block individually
-            $Block = $_.Groups["content"]
-            if ($Block.Length) {
-                $BlockIndented = $Block -replace "(?m)^[\t ]*(.*)$", "`t`$1"
-                $Formatted = $Formatted.Replace($Block, $BlockIndented)
-            }
-        }
-    }
-
     # Use consistent spacing for UDTs and enumerations
     $Formatted = $Formatted -replace "(?s)((?<!\w)TYPE\s+\w+\s*:)\s*\(\*(.*)\*\)\s*(?=\((?!\*)|STRUCT)", "(*`$2*)`r`n`$1`r`n" # First, move any inline-comment above type/enum declaration
     $Formatted = $Formatted -replace "(?s)TYPE\s+(\w+)\s*:\s*(\((?!\*)|STRUCT)(?:\r?\n)*", "TYPE `$1 :`r`n`$2`r`n"
     $Formatted = $Formatted -replace "\s*(\);|END_STRUCT)\s+END_TYPE;?", "`r`n`$1`r`nEND_TYPE"
+
+    # Use at least one tab for indentation within any VAR/TYPE/STRUCT block
+    Select-String -InputObject $Formatted -Pattern "(?smi)^(?<container>VAR|TYPE)(?:_\w+)?.*?\n+(?:\s*(?:STRUCT|\((?!\*))(?:\r?\n)*)?(?<content>.+?)\s*(?:\s*(?:END_STRUCT|\)\s*;)\s*)?^END_\<container>" -AllMatches | ForEach-Object {
+        $_.Matches | ForEach-Object {
+            $Block = $_.Groups["content"]
+            if ($Block.Length) {
+                $Indented = $Block -replace "(?m)^\t?(.*)$", "`t`$1"
+                $Formatted = $Formatted.Replace($Block, $Indented)
+            }
+        }
+    }
 
     # Remove leading/trailing space and spaces in round/square brackets
     $Formatted = $Formatted -replace '(?<=\r?\n) +', ''
