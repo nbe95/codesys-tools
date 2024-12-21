@@ -1,4 +1,4 @@
-Remove-Item -Recurse -Force "$PSScriptRoot\tmp"
+Remove-Item -Recurse -Path "$PSScriptRoot\tmp" -ErrorAction SilentlyContinue
 Copy-Item -Recurse -Path "$PSScriptRoot\input" -Destination "$PSScriptRoot\tmp"
 
 $Files = Get-ChildItem -Path "$PSScriptRoot\tmp" -Filter "*.exp" -Recurse
