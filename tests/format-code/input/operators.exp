@@ -1,0 +1,59 @@
+foo:=bar
+foo=>bar
+foo<=bar
+foo>=bar
+foo<>bar
+foo=bar
+foo<bar
+foo>bar
+arrow->arrow-->arrow
+arrow<-arrow<--arrow
+arrow<->arrow<-->arrow
+arrow==>arrow
+arrow<==arrow
+arrow<=>arrow<==>arrow
+
+foo :=bar
+foo =>bar
+foo <=bar
+foo >=bar
+foo <>bar
+foo =bar
+foo <bar
+foo >bar
+arrow ->arrow -->arrow
+arrow <-arrow <--arrow
+arrow <->arrow <-->arrow
+arrow ==>arrow
+arrow <==arrow
+arrow <=>arrow <==>arrow
+
+foo:= bar
+foo=> bar
+foo<= bar
+foo>= bar
+foo<> bar
+foo= bar
+foo< bar
+foo> bar
+arrow-> arrow--> arrow
+arrow<- arrow<-- arrow
+arrow<-> arrow<--> arrow
+arrow==> arrow
+arrow<== arrow
+arrow<=> arrow<==> arrow
+
+foo := bar
+foo => bar
+foo <= bar
+foo >= bar
+foo <> bar
+foo = bar
+foo < bar
+foo > bar
+arrow -> arrow --> arrow
+arrow <- arrow <-- arrow
+arrow <-> arrow <--> arrow
+arrow ==> arrow
+arrow <== arrow
+arrow <=> arrow <==> arrow
