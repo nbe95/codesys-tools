@@ -19,6 +19,13 @@ Function Format-CodesysFile {
 
     $Formatted = $Content
 
+    # Eliminate nested comments (repeat until all are done)
+    do {
+        $Before = $Formatted
+        $Formatted = $Formatted -replace "(?s)\(\*((?:.(?!\*\)))*?)\(\*", "(*`$1 "
+        $Formatted = $Formatted -replace "(?s)\*\)((?:.(?<!\(\*))*?)\*\)", " `$1*)"
+    } until ($Formatted -eq $Before)
+
     # Enforce spaces around operators :=, =>, <=, >=, <>, =, <, > (unless part of arrows)
     $Formatted = $Formatted -replace ' *(:=|(?<!=|<)=>|<=(?!=|>)|>=|<>|(?<!=)=(?!=|>)|<(?!=|-)|(?<!=|-)>) *', ' $1 '
 

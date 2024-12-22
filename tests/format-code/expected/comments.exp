@@ -22,7 +22,9 @@
 (* comment *)
 (* comment *)
 
-(* nested(* comment in comment *)nested *)
+(* nested comment in comment nested *)
+before(* nested comment
+across multi lines *)after
 
 (* multi
 line comment

@@ -23,6 +23,8 @@
 (*comment			*)
 
 (*nested(*comment in comment*)nested*)
+before(* nested(*comment
+across (* multi *) lines*)*)after
 
 (*
 
