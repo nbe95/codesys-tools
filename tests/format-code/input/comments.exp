@@ -1,0 +1,35 @@
+(*comment*)
+(* comment*)
+(*  comment*)
+(*   comment*)
+(*comment *)
+(* comment *)
+(*  comment  *)
+(*   comment   *)
+(*comment *)
+(*comment  *)
+(*comment   *)
+
+(*comment*)
+(*	comment*)
+(*		comment*)
+(*			comment*)
+(*comment	*)
+(*	comment	*)
+(*		comment		*)
+(*			comment			*)
+(*comment	*)
+(*comment		*)
+(*comment			*)
+
+(*nested(*comment in comment*)nested*)
+
+(*
+
+multi
+    line comment
+
+    with spaces
+			and	tabs
+
+			*)

@@ -19,7 +19,7 @@ Function Format-CodesysFile {
 
     $Formatted = $Content
 
-    # Enforce spaces around operators :=, =>, <=, >=, <>, =, <, >
+    # Enforce spaces around operators :=, =>, <=, >=, <>, =, <, > (unless part of arrows)
     $Formatted = $Formatted -replace ' *(:=|(?<!=|<)=>|<=(?!=|>)|>=|<>|(?<!=)=(?!=|>)|<(?!=|-)|(?<!=|-)>) *', ' $1 '
 
     # Enforce spaces before and after arithmetical operators (unless part of arrows, comments or strings)
@@ -86,8 +86,9 @@ Function Format-CodesysFile {
     }
 
     # Remove leading/trailing space, spaces in round/square brackets and those before semicolons
-    $Formatted = $Formatted -replace "(?s)^ +", ""
-    $Formatted = $Formatted -replace "(?s)[\t ]+$", ""
+    $Formatted = $Formatted -replace "(?m)^ +", ""
+    $Formatted = $Formatted -replace "(?m) +$", ""
+    $Formatted = $Formatted -replace "(?m)[\t ]+$", ""
     $Formatted = $Formatted -replace "(?<=[\(\[]) +", ""
     $Formatted = $Formatted -replace " +(?=[\)\]])", ""
     $Formatted = $Formatted -replace "[\t ]+(?=;)", ""

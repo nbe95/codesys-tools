@@ -16,8 +16,9 @@ foo+bar
 foo-bar
 foo*bar
 foo/bar
-'string+string-string*string/string'
 (* comment+comment-comment*comment/comment *)
+'string+string-string*string/string'
+'adjacent-string' adjacent-string 'adjacent-string'
 
 foo :=bar
 foo =>bar
@@ -37,8 +38,9 @@ foo +bar
 foo -bar
 foo *bar
 foo /bar
-'string +string -string *string /string'
 (* comment +comment -comment *comment /comment *)
+'string +string -string *string /string'
+'adjacent -string' adjacent -string 'adjacent -string'
 
 foo:= bar
 foo=> bar
@@ -58,8 +60,9 @@ foo+ bar
 foo- bar
 foo* bar
 foo/ bar
-'string+ string- string* string/ string'
 (* comment+ comment- comment* comment/ comment *)
+'string+ string- string* string/ string'
+'adjacent- string' adjacent- string 'adjacent- string'
 
 foo := bar
 foo => bar
@@ -79,8 +82,9 @@ foo + bar
 foo - bar
 foo * bar
 foo / bar
-'string + string - string * string / string'
 (* comment + comment - comment * comment / comment *)
+'string + string - string * string / string'
+'adjacent - string' adjacent - string 'adjacent - string'
 
 (* multi-line-
 -comment *)
