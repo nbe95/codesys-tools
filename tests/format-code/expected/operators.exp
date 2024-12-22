@@ -1,90 +1,59 @@
-foo := bar
-foo => bar
-foo <= bar
-foo >= bar
-foo <> bar
-foo = bar
-foo < bar
-foo > bar
+foo := bar => baz <= foobar >= foo <> bar = baz < foobar > foooo
+foo + bar - baz * foobar / foo
 arrow->arrow-->arrow
 arrow<-arrow<--arrow
 arrow<->arrow<-->arrow
 arrow==>arrow
 arrow<==arrow
 arrow<=>arrow<==>arrow
-foo + bar
-foo - bar
-foo * bar
-foo / bar
 (* comment+comment-comment*comment/comment *)
 'string+string-string*string/string'
 'adjacent-string' adjacent - string 'adjacent-string'
 
-foo := bar
-foo => bar
-foo <= bar
-foo >= bar
-foo <> bar
-foo = bar
-foo < bar
-foo > bar
+foo := bar => baz <= foobar >= foo <> bar = baz < foobar > foooo
+foo + bar - baz * foobar / foo
 arrow ->arrow -->arrow
 arrow <-arrow <--arrow
 arrow <->arrow <-->arrow
 arrow ==>arrow
 arrow <==arrow
 arrow <=>arrow <==>arrow
-foo + bar
-foo - bar
-foo * bar
-foo / bar
 (* comment +comment -comment *comment /comment *)
 'string +string -string *string /string'
 'adjacent -string' adjacent - string 'adjacent -string'
 
-foo := bar
-foo => bar
-foo <= bar
-foo >= bar
-foo <> bar
-foo = bar
-foo < bar
-foo > bar
+foo := bar => baz <= foobar >= foo <> bar = baz < foobar > foooo
+foo + bar - baz * foobar / foo
 arrow-> arrow--> arrow
 arrow<- arrow<-- arrow
 arrow<-> arrow<--> arrow
 arrow==> arrow
 arrow<== arrow
 arrow<=> arrow<==> arrow
-foo + bar
-foo - bar
-foo * bar
-foo / bar
 (* comment+ comment- comment* comment/ comment *)
 'string+ string- string* string/ string'
 'adjacent- string' adjacent - string 'adjacent- string'
 
-foo := bar
-foo => bar
-foo <= bar
-foo >= bar
-foo <> bar
-foo = bar
-foo < bar
-foo > bar
+foo := bar => baz <= foobar >= foo <> bar = baz < foobar > foooo
+foo + bar - baz * foobar / foo
 arrow -> arrow --> arrow
 arrow <- arrow <-- arrow
 arrow <-> arrow <--> arrow
 arrow ==> arrow
 arrow <== arrow
 arrow <=> arrow <==> arrow
-foo + bar
-foo - bar
-foo * bar
-foo / bar
 (* comment + comment - comment * comment / comment *)
 'string + string - string * string / string'
 'adjacent - string' adjacent - string 'adjacent - string'
+
+foo := bar => baz <= foobar >= foo <> bar = baz < foobar > foooo
+foo + bar - baz * foobar / foo
+arrow -> arrow --> arrow
+arrow <- arrow <-- arrow
+arrow <-> arrow <--> arrow
+arrow ==> arrow
+arrow <== arrow
+arrow <=> arrow <==> arrow
 
 (* multi-line-
 -comment *)
