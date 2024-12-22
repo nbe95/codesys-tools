@@ -76,29 +76,37 @@ Function Format-CodesysFile {
         $Formatted = $Formatted -replace "(?!\W)(T(?:IME)?)#((?:\d+[dhms]+)+)?(\d+)$_", "`$1#`$2`$3$_"
     }
 
+    # Use consistent spacing for UDTs and enumerations
+    $NewLine = [Environment]::NewLine
+    $Formatted = $Formatted -replace "(?s)((?<!\w)TYPE\s+\w+\s*:)\s*\(\*(.*)\*\)\s*(?=\((?!\*)|STRUCT)", "(*`$2*)$NewLine`$1$NewLine" # First, move any inline-comment above type/enum declaration
+    $Formatted = $Formatted -replace "(?s)TYPE\s+(\w+)\s*:\s*(\((?!\*)|STRUCT)[\r\n]*", "TYPE `$1 :$NewLine`$2$NewLine"
+    $Formatted = $Formatted -replace "\s*(\);|END_STRUCT)\s+END_TYPE;?", "$NewLine`$1$NewLineEND_TYPE"
+
     # Remove empty VAR blocks
     $Formatted = $Formatted -replace "(?m)^VAR([^\n]+)?\n\s*END_VAR\r?\n?", ""
 
-    # Use consistent spacing for UDTs and enumerations
-    $Formatted = $Formatted -replace "(?s)((?<!\w)TYPE\s+\w+\s*:)\s*\(\*(.*)\*\)\s*(?=\((?!\*)|STRUCT)", "(*`$2*)`r`n`$1`r`n" # First, move any inline-comment above type/enum declaration
-    $Formatted = $Formatted -replace "(?s)TYPE\s+(\w+)\s*:\s*(\((?!\*)|STRUCT)(?:\r?\n)*", "TYPE `$1 :`r`n`$2`r`n"
-    $Formatted = $Formatted -replace "\s*(\);|END_STRUCT)\s+END_TYPE;?", "`r`n`$1`r`nEND_TYPE"
-
     # Use at least one tab for indentation within any VAR/TYPE/STRUCT block
-    Select-String -InputObject $Formatted -Pattern "(?smi)^(?<container>VAR|TYPE)(?:_\w+)?.*?\n+(?:\s*(?:STRUCT|\((?!\*))(?:\r?\n)*)?(?<content>.+?)\s*(?:\s*(?:END_STRUCT|\)\s*;)\s*)?^END_\<container>" -AllMatches | ForEach-Object {
-        $_.Matches | ForEach-Object {
+    Select-String -InputObject $Formatted -Pattern "(?smi)^(?<container>VAR|TYPE)(?:_\w+)?.*?[\r\n]+(?:\s*(?:STRUCT|\((?!\*))[\r\n]*)?(?<content>.+?)\s*(?:\s*(?:END_STRUCT|\)\s*;)\s*)?^END_\<container>" -AllMatches | ForEach-Object {
+
+        # Note: Last match must be processed first, because results may get manipulated in place
+        $Matches = $_.Matches
+        [array]::Reverse($Matches)
+
+        $Matches | ForEach-Object {
             $Block = $_.Groups["content"]
             if ($Block.Length) {
-                $Indented = $Block -replace "(?m)^\t?(.*)$", "`t`$1"
-                $Formatted = $Formatted.Replace($Block, $Indented)
+                $Indented = $Block.Value -replace "(?m)^\t?(.*)`$", "`t`$1"
+
+                # Replace actual block by position and length
+                $Formatted = $Formatted.Remove($Block.Index, $Block.Length).Insert($Block.Index, $Indented)
             }
         }
     }
 
     # Remove leading/trailing space, spaces in round/square brackets and those before semicolons
     $Formatted = $Formatted -replace "(?m)^ +", ""
-    $Formatted = $Formatted -replace "(?m) +$", ""
-    $Formatted = $Formatted -replace "(?m)[\t ]+$", ""
+    $Formatted = $Formatted -replace "(?m) +`$", ""
+    $Formatted = $Formatted -replace "(?m)[\t ]+`$", ""
     $Formatted = $Formatted -replace "(?<=[\(\[]) +", ""
     $Formatted = $Formatted -replace " +(?=[\)\]])", ""
     $Formatted = $Formatted -replace "[\t ]+(?=;)", ""
