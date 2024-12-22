@@ -50,7 +50,7 @@ Function Format-CodesysFile {
     $Formatted = $Formatted -replace "(?<=THEN|END_IF|END_FOR|END_WHILE|END_REPEAT|END_CASE)\s*?;", ""
 
     # Initialize strings and arrays properly using square brackets
-    $Formatted = $Formatted -replace "(?<!\S)STRING\s*?\((.+?)\)", "STRING[`$1]"
+    $Formatted = $Formatted -replace "(?<!\S)STRING\s*?[\[\(](.+?)[\]\)]", "STRING[`$1]"
     $Formatted = $Formatted -replace "(?<!\S)ARRAY\s*?\[(.+?)\]", "ARRAY[`$1]"
 
     # Only use NOT operator with parentheses and remove any space between
