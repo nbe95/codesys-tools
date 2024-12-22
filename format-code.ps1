@@ -22,33 +22,33 @@ Function Format-CodesysFile {
     # Enforce spaces around operators :=, =>, <=, >=, <>, =, <, >
     $Formatted = $Formatted -replace ' *(:=|(?<!=|<)=>|<=(?!=|>)|>=|<>|(?<!=)=(?!=|>)|<(?!=|-)|(?<!=|-)>) *', ' $1 '
 
-    # Enforce spaces before/after - and / (unless in arrows, comments, strings or constructed type like DT#1970-01-01-00:00:00)
+    # Enforce spaces before and after arithmetical operators (unless part of arrows, comments or strings)
     # Note: Find and mark relevant chars first, then replace them in a second step
-    $Formatted = $Formatted -replace '((?:\(\*(?:.|\r?\n)*?\*\)|''.*?''))|[\t ]*\/[\t ]*', '$1{slash}'
-    $Formatted = $Formatted -replace '((?:\(\*(?:.|\r?\n)*?\*\)|''.*?''|#[\d\-_:]+))|(?<!\W|\n)[\t ]*\-(?!>|-)[\t ]*', '$1{hyphen}'
+    $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?')|[\t ]*\+[\t ]*", '$1{plus}'
+    $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?'|#[\d\-_:]+)|(?<=\w)[\t ]*\-(?!>|-)[\t ]*", '$1{minus}' # allow minus prefix (e.g. -1) and in constructed types like DT#0000-00-00:00:00:00
+    $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?')|[\t ]*\*[\t ]*", '$1{asterisk}'
+    $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?')|[\t ]*\/[\t ]*", '$1{slash}'
 
-    $Formatted = $Formatted -replace '((?:\(\*(?:.|\r?\n)*?\*\)|''.*?''|#[\d\-_:]+))(?:{(?:slash|hyphen)})+', '$1'
-    $Formatted = $Formatted -replace '{hyphen}', ' - '
-    $Formatted = $Formatted -replace '{slash}', ' / '
-
-    # Put spaces around other arithmetical operators +, *
-    $Formatted = $Formatted -replace '(?<![\s\(+*]|^)([+*])(?![+*\)])', ' $1'
-    $Formatted = $Formatted -replace '(?<![+*\(])([+*])(?![\s\)+*]|$)', '$1 '
+    $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?'|#[\d\-_:]+)(?:{(?:plus|minus|asterisk|slash)})+", '$1'
+    $Formatted = $Formatted -replace "{plus}", " + "
+    $Formatted = $Formatted -replace "{minus}", " - "
+    $Formatted = $Formatted -replace "{asterisk}", " * "
+    $Formatted = $Formatted -replace "{slash}", " / "
 
     # Open and close comments with a single space
-    $Formatted = $Formatted -replace '\(\*(?!$|\r?\n)\s*', '(* '
-    $Formatted = $Formatted -replace '\s*(?<!^|\n)\*\)', ' *)'
+    $Formatted = $Formatted -replace "(?s)\(\*(?!`$)\s*", "(* "
+    $Formatted = $Formatted -replace "(?s)\s*(?<!^)\*\)", " *)"
 
     # Remove unnecessary semicolons after specific keywords
-    $Formatted = $Formatted -replace '(?<=THEN|END_IF|END_FOR|END_WHILE|END_REPEAT|END_CASE);', ''
+    $Formatted = $Formatted -replace "(?<=THEN|END_IF|END_FOR|END_WHILE|END_REPEAT|END_CASE)\s*?;", ""
 
     # Initialize strings and arrays properly using square brackets
-    $Formatted = $Formatted -replace '(?<!\S)STRING\s*?\((.+?)\)', 'STRING[$1]'
-    $Formatted = $Formatted -replace 'ARRAY\s*?\[(.+?)\]', 'ARRAY[$1]'
+    $Formatted = $Formatted -replace "(?<!\S)STRING\s*?\((.+?)\)", "STRING[`$1]"
+    $Formatted = $Formatted -replace "(?<!\S)ARRAY\s*?\[(.+?)\]", "ARRAY[`$1]"
 
     # Only use NOT operator with parentheses and remove any space between
-    $Formatted = $Formatted -creplace '(?<!\w)NOT\s+(?!_)((?>[\w.]+(?>(?>\[(?>\((?<array>)|[^[\]]+|\](?<-array>))*(?(array)(?!))\]|\((?>\((?<expr>)|[^()]+|\)(?<-expr>))*(?(expr)(?!))\))?\.?)*)+)', 'NOT($1)'
-    $Formatted = $Formatted -creplace 'NOT\s+\(', 'NOT('
+    $Formatted = $Formatted -creplace "(?<!\w)NOT\s+(?!_)((?>[\w.]+(?>(?>\[(?>\((?<array>)|[^[\]]+|\](?<-array>))*(?(array)(?!))\]|\((?>\((?<expr>)|[^()]+|\)(?<-expr>))*(?(expr)(?!))\))?\.?)*)+)", "NOT(`$1)"
+    $Formatted = $Formatted -creplace "NOT\s+\(", "NOT("
 
     # Use capital data type prefixes and small time units (e.g. T#1s)
     @(
@@ -85,34 +85,31 @@ Function Format-CodesysFile {
         }
     }
 
-    # Remove leading/trailing space and spaces in round/square brackets
-    $Formatted = $Formatted -replace '(?<=\r?\n) +', ''
-    $Formatted = $Formatted -replace '[\t ]+(?=\r?\n)', ''
-    $Formatted = $Formatted -replace '(?<=[\(\[]) +', ''
-    $Formatted = $Formatted -replace ' +(?=[\)\]])', ''
+    # Remove leading/trailing space, spaces in round/square brackets and those before semicolons
+    $Formatted = $Formatted -replace "(?s)^ +", ""
+    $Formatted = $Formatted -replace "(?s)[\t ]+$", ""
+    $Formatted = $Formatted -replace "(?<=[\(\[]) +", ""
+    $Formatted = $Formatted -replace " +(?=[\)\]])", ""
+    $Formatted = $Formatted -replace "[\t ]+(?=;)", ""
 
     # Remove superfluous line breaks
-    $Formatted = $Formatted -replace '(\r?\n)+(\(\* @(?:END_DECLARATION|OBJECT_END) .+? \*\))', '$1$2'
-    $Formatted = $Formatted -replace '(\r?\n)+(END_(?:VAR|TYPE))', '$1$2'
-    $Formatted = $Formatted -replace '(\r?\n){3,}(END_(?:PROGRAM|FUNCTION_BLOCK|FUNCTION))', '$1$2'
-    $Formatted = $Formatted -replace '((?:\r?\n){3})(?:\r?\n)+', '$1'
+    $Formatted = $Formatted -replace "(\r?\n)+(\(\* @(?:END_DECLARATION|OBJECT_END) .+? \*\))", "`$1`$2"
+    $Formatted = $Formatted -replace "(\r?\n)+(END_(?:VAR|TYPE))", "`$1`$2"
+    $Formatted = $Formatted -replace "(\r?\n){3,}(END_(?:PROGRAM|FUNCTION_BLOCK|FUNCTION))", "`$1`$2"
+    $Formatted = $Formatted -replace "((?:\r?\n){3})(?:\r?\n)+", "`$1"
 
     # Remove multiple spaces and those surrounded by tabs
-    $Formatted = $Formatted -replace '(?:(?<=\t) +| +(?=\t))', ''
-    $Formatted = $Formatted -replace ' +', ' '
-
-    # Remove spaces in front of semicolons
-    $Formatted = $Formatted -replace '[\t ]+(?=;)', ''
+    $Formatted = $Formatted -replace "(?:(?<=[\t ]) +| +(?=\t))", ""
 
     # Because of performance and encoding issues, for the following operations each line must be processed individually
     $Lines = @()
     $Formatted -split "\r\n" | ForEach-Object {
 
         # Skip any non-code-related lines
-        if ($_ -match '^(?!VISUALISATION|_|\(\* @).') {
+        if ($_ -match "^(?!VISUALISATION|_|\(\* @).") {
 
-            # Make sure each comma has no leading space and is followed by exactly one space, unless at the end of a line
-            $FormattedLine = $_ -replace '\s*?,(?!\t|\r?\n|$)(?: +)?', ', '
+            # Make sure each comma has no leading space and is followed by exactly one space, unless in a table or at the end of a line
+            $FormattedLine = $_ -replace "\s*?,(?!\t|$) +?", ", "
             $Lines += $FormattedLine
         } else {
             $Lines += $_
