@@ -145,7 +145,7 @@ function Test-VarDeclaration {
     $Errors = 0
 
     # Split declaration into its parts
-    if ($Declaration -cmatch "(?sm)(?<var>(?:(?<prefix>(?:[GS]+_)?(?:[A-Z]+|[a-z]+)?)_)?(?<name>\S+?))\s*(?<addr>AT\s+[%\w.*]+)?\s*:\s*(?<type>[\w\s\[\].,]+?)(?:\s*:=\s*(?<init>.*?))?\s*;") {
+    if ($Declaration -cmatch "(?sm)(?<var>(?:(?<prefix>(?:[GS]+_)?(?:[A-Z]+|[a-z]+)?)_)?(?<name>\S+?))\s*(?<addr>AT\s+[%\w.*]+)?\s*:\s*(?<type>[\w\s\[\]\(\).,]+?)(?:\s*:=\s*(?<init>.*?))?\s*;") {
         $Var = $Matches["var"]
         $Prefix = $Matches["prefix"]
         $Name = $Matches["name"]
@@ -178,15 +178,15 @@ function Test-VarDeclaration {
         }
         if ($Prefix) {
             if ($ExpectedPrefixes -and -not $ExpectedPrefixes.Contains($Prefix)) {
-                Write-Log Error "Variable prefix does not match declaration. Current: $($Prefix), expected: $($ExpectedPrefixesLog)" $File $Var
+                Write-Log Error "Variable prefix does not match declaration. Expected: $ExpectedPrefixesLog, actual: $Prefix" $File $Var
                 $Errors++;
             }
         } elseif (-not $IsSingleCharInt) {
             if ($IsStruct) {
-                Write-Log Warning "Variable prefix missing in struct. Expected: $($ExpectedPrefixesLog)" $File $Var
+                Write-Log Warning "Variable prefix missing in struct. Expected: $ExpectedPrefixesLog" $File $Var
                 $Warnings++;
             } else {
-                Write-Log Error "Variable prefix missing. Expected: $($ExpectedPrefixesLog)" $File $Var
+                Write-Log Error "Variable prefix missing. Expected: $ExpectedPrefixesLog" $File $Var
                 $Errors++;
             }
         }
@@ -223,7 +223,7 @@ function Get-ValidVarPrefixes {
 
     $BaseType = ""
     foreach ($TypeKey in $TypeMapping.Keys) {
-        if ($Type -match "(?m)(?<!\w)$TypeKey(?:\s*[\[\(][\w\d\s.,]+[\]\)])?\s*$") {
+        if ($Type -match "(?m)(?<!\w)$TypeKey(?:\s*[\[\(][\w\d\s.,]+[\]\)])?\s*`$") {
             $BaseType = $TypeMapping[$TypeKey]
             break
         }
