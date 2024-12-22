@@ -1,37 +1,55 @@
 BeforeAll {
+    function FindEntry ([string[]] $Lines, [string] $Class, [string] $Var, [string] $Msg, [string] $Actual, [string] $Expected, [string] $Keyword) {
+        foreach ($Line in $Lines) {
+            if ($Line -Match "(?m)^\[\s*(?<cls>\w+)\s*\] (?<file>.+): (?<var>.+) - (?<msg>.*?)(?: expected: (?<exp>.+?))?(?:, actual: (?<act>.+?))?$") {
+                if ((-not $Class        -or $Matches["cls"] -eq $Class) -and `
+                    (-not $Var          -or $Matches["var"] -eq $Var) -and `
+                    (-not $Actual       -or $Matches["act"] -eq $Actual) -and `
+                    (-not $Expected     -or $Matches["exp"] -eq $Expected) -and `
+                    (-not $Keyword      -or $Matches["msg"] -like "*$Keyword*")) {
+                    return $Line
+                }
+            }
+        }
+        return $null
+    }
+
     $Cmd = Resolve-Path -Relative "$PSScriptRoot\..\..\check-declarations.ps1"
     $InputDir = Resolve-Path -Relative "$PSScriptRoot\input"
 }
 
 Describe "Run and check declaration checker" {
+
     It "Check basic type declarations" {
+
         PowerShell $Cmd "$InputDir\basic-types.exp" | Tee-Object -Variable Output | Out-Host
-        $Result = $Output -Join "`n"
 
-        $Result | Should -Match "(?<!\w)Nothing .*missing.* expected: x"
-        $Result | Should -Match "(?<!\w)_Underscore .*missing.* expected: x"
+        FindEntry $Output -Class "ERROR" -Var "Nothing" -Expected "x" -Keyword "missing" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "ERROR" -Var "_Underscore" -Expected "x" -Keyword "missing" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "ERROR" -Var "Invalid" -Expected "?" -Keyword "missing" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "INFO"  -Var "Invalid" -Keyword "no declaration found" | Should -Not -BeNullOrEmpty
 
-        $Result | Should -Match "(?<!\w)y_Bool .*current: y.* expected: x"
+        FindEntry $Output -Class "ERROR" -Var "y_Bool" -Actual "y" -Expected "x" | Should -Not -BeNullOrEmpty
 
-        $Result | Should -Match "(?<!\w)bz_Byte .*current: bz.* expected: by"
-        $Result | Should -Match "(?<!\w)sj_SInt .*current: sj.* expected: si"
-        $Result | Should -Match "(?<!\w)usj_USInt .*current: usj.* expected: usi"
+        FindEntry $Output -Class "ERROR" -Var "bz_Byte" -Actual "bz" -Expected "by" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "ERROR" -Var "sj_SInt" -Actual "sj" -Expected "si" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "ERROR" -Var "usj_USInt" -Actual "usj" -Expected "usi" | Should -Not -BeNullOrEmpty
 
-        $Result | Should -Match "(?<!\w)v_Word .*current: v.* expected: w"
-        $Result | Should -Match "(?<!\w)j_Int .*current: j.* expected: i"
-        $Result | Should -Match "(?<!\w)uj_UInt .*current: uj.* expected: ui"
+        FindEntry $Output -Class "ERROR" -Var "v_Word" -Actual "v" -Expected "w" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "ERROR" -Var "j_Int" -Actual "j" -Expected "i" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "ERROR" -Var "uj_UInt" -Actual "uj" -Expected "ui" | Should -Not -BeNullOrEmpty
 
-        $Result | Should -Match "(?<!\w)dv_DWord .*current: dv.* expected: dw"
-        $Result | Should -Match "(?<!\w)dj_DInt .*current: dj.* expected: di"
-        $Result | Should -Match "(?<!\w)udj_UDInt .*current: udj.* expected: udi"
+        FindEntry $Output -Class "ERROR" -Var "dv_DWord" -Actual "dv" -Expected "dw" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "ERROR" -Var "dj_DInt" -Actual "dj" -Expected "di" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "ERROR" -Var "udj_UDInt" -Actual "udj" -Expected "udi" | Should -Not -BeNullOrEmpty
 
-        $Result | Should -Match "(?<!\w)u_Time .*current: u.* expected: tim"
-        $Result | Should -Match "(?<!\w)c_Date .*current: c.* expected: d"
-        $Result | Should -Match "(?<!\w)toy_TimeOfDay .*current: toy.* expected: tod"
-        $Result | Should -Match "(?<!\w)du_DateTime .*current: du.* expected: dt"
+        FindEntry $Output -Class "ERROR" -Var "tom_Time" -Actual "tom" -Expected "tim" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "ERROR" -Var "c_Date" -Actual "c" -Expected "d" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "ERROR" -Var "toy_TimeOfDay" -Actual "toy" -Expected "tod" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "ERROR" -Var "du_DateTime" -Actual "du" -Expected "dt" | Should -Not -BeNullOrEmpty
 
-        $Result | Should -Match "(?<!\w)q_String1 .*current: q.* expected: s"
-        $Result | Should -Match "(?<!\w)q_String2 .*current: q.* expected: s"
-        # $Result | Should -Match "(?<!\w)q_String3 .*current: q.* expected: s"
+        FindEntry $Output -Class "ERROR" -Var "q_String1" -Actual "q" -Expected "s" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "ERROR" -Var "q_String2" -Actual "q" -Expected "s" | Should -Not -BeNullOrEmpty
+        FindEntry $Output -Class "ERROR" -Var "q_String3" -Actual "q" -Expected "s" | Should -Not -BeNullOrEmpty
     }
 }
