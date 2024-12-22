@@ -27,8 +27,8 @@ VAR
     udi_UDInt       : UDINT;
     udj_UDInt       : UDINT;
 
-    t_Time          : TIME;
-    u_Time          : TIME;
+    tim_Time        : TIME;
+    tom_Time        : TIME;
     d_Date          : DATE;
     c_Date          : DATE;
     tod_TimeOfDay   : TIME_OF_DAY;
