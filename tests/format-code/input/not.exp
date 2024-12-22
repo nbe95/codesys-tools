@@ -1,0 +1,10 @@
+NOT(foo)
+NOT foo
+NOT .bar
+NOT func(foobar)
+NOT func1(NOT func2(baz))
+NOT func(NOT a)
+NOT func(param := NOT fun1(value, param = NOT ARRAY[1, 2, 3]), NOT x AND NOT y)
+NOT (NOT (NOT foooo) AND (NOT bar))
+NOT a AND NOT(NOT (b AND NOT(c AND NOT d AND NOT (NOT (e AND NOT f)))))
+KNOT NOT KNOT KNOT

@@ -53,9 +53,12 @@ Function Format-CodesysFile {
     $Formatted = $Formatted -replace "(?<!\S)STRING\s*?[\[\(](.+?)[\]\)]", "STRING[`$1]"
     $Formatted = $Formatted -replace "(?<!\S)ARRAY\s*?\[(.+?)\]", "ARRAY[`$1]"
 
-    # Only use NOT operator with parentheses and remove any space between
-    $Formatted = $Formatted -creplace "(?<!\w)NOT\s+(?!_)((?>[\w.]+(?>(?>\[(?>\((?<array>)|[^[\]]+|\](?<-array>))*(?(array)(?!))\]|\((?>\((?<expr>)|[^()]+|\)(?<-expr>))*(?(expr)(?!))\))?\.?)*)+)", "NOT(`$1)"
-    $Formatted = $Formatted -creplace "NOT\s+\(", "NOT("
+    # Only use NOT operator with parentheses and remove any space between (repeat until all are done)
+    do {
+        $Before = $Formatted
+        $Formatted = $Formatted -creplace "(?<!\w)NOT\s+(?!_)((?>[\w.]+(?>(?>\[(?>\((?<array>)|[^[\]]+|\](?<-array>))*(?(array)(?!))\]|\((?>\((?<expr>)|[^()]+|\)(?<-expr>))*(?(expr)(?!))\))?\.?)*)+)", "NOT(`$1)"
+        $Formatted = $Formatted -creplace "NOT\s+\(", "NOT("
+    } until ($Formatted -eq $Before)
 
     # Use capital data type prefixes and small time units (e.g. T#1s)
     @(
