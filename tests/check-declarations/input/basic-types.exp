@@ -1,6 +1,7 @@
 VAR
     Nothing         : BOOL;
     _Underscore     : BOOL;
+    Invalid         : INVALID;
 
     x_Bool          : BOOL;
     y_Bool          : BOOL;
