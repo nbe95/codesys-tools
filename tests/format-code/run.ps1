@@ -8,3 +8,5 @@ $Data = $Files | Sort-Object | ForEach-Object {
 
 $Container = New-PesterContainer -Path "$PSScriptRoot\formatter.tests.ps1" -Data $Data
 Invoke-Pester -Container $Container -Output Detailed
+
+Invoke-Pester -Path "$PSScriptRoot\dry-mode.tests.ps1"

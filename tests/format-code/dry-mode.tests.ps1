@@ -1,13 +1,10 @@
-param (
-    [Parameter(Mandatory)] [string] $File
-)
-
 BeforeAll {
+    # Use first input file
+    $File = @(Get-ChildItem -Path "$PSScriptRoot\input" -Filter "*.exp" -Recurse | ForEach-Object { $_.FullName }) | Select-Object -First 1
+
     $Cmd = Resolve-Path -Relative "$PSScriptRoot\..\..\format-code.ps1"
     $TmpFile = $File -Replace "\\input\\", "\tmp\"
-    $ExpectedFile = $File -Replace "\\input\\", "\expected\"
-
-    $Expected = Get-Content -Path $ExpectedFile -Raw
+    $Expected = Get-Content -Path $File -Raw
 }
 
 Describe "Test file - <File>" {
@@ -16,7 +13,7 @@ Describe "Test file - <File>" {
     }
 
     It "Run and check formatter result" {
-        PowerShell $Cmd $TmpFile | Out-Host
+        PowerShell $Cmd $TmpFile -Dry | Out-Host
 
         $Result = Get-Content -Path $TmpFile -Raw
         $Result | Should -BeExactly $Expected
