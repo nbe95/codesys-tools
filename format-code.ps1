@@ -134,10 +134,12 @@ Function Format-CodesysFile {
 
         # Skip any non-code-related lines
         if ($_ -match "^(?!VISUALISATION|_|\(\* @).") {
+            $LineFormatted = $_
 
             # Make sure each comma has no leading space and is followed by exactly one space, unless in a table or at the end of a line
-            $FormattedLine = $_ -replace "\s*?,(?!\t|$) +?", ", "
-            $Lines += $FormattedLine
+            $LineFormatted = $LineFormatted -replace "\s+(?=,)", ""
+            $LineFormatted = $LineFormatted -replace ",(?!\t|`$) *", ", "
+            $Lines += $LineFormatted
         } else {
             $Lines += $_
         }
