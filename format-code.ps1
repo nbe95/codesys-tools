@@ -111,22 +111,22 @@ Function Format-CodesysFile {
         }
     }
 
-    # Remove leading/trailing space, spaces in round/square brackets and those before semicolons
-    $Formatted = $Formatted -replace "(?m)^ +", ""
-    $Formatted = $Formatted -replace "(?m) +(?=\r?\n)", ""
-    $Formatted = $Formatted -replace "(?m)[\t ]+(?=\r?\n)", ""
-    $Formatted = $Formatted -replace "(?<=[\(\[]) +", ""
-    $Formatted = $Formatted -replace " +(?=[\)\]])", ""
-    $Formatted = $Formatted -replace "[\t ]+(?=;)", ""
-
     # Remove superfluous line breaks
     $Formatted = $Formatted -replace "(\r?\n)+(\(\* @(?:END_DECLARATION|OBJECT_END) .+? \*\))", "`$1`$2"
     $Formatted = $Formatted -replace "(\r?\n)+(END_(?:VAR|TYPE))", "`$1`$2"
     $Formatted = $Formatted -replace "(\r?\n){3,}(END_(?:PROGRAM|FUNCTION_BLOCK|FUNCTION))", "`$1`$2"
     $Formatted = $Formatted -replace "((?:\r?\n){3})(?:\r?\n)+", "`$1"
 
-    # Remove multiple spaces and those surrounded by tabs
+    # Remove leading/trailing space, spaces in round/square brackets
+    $Formatted = $Formatted -replace "(?m)^ +", ""
+    $Formatted = $Formatted -replace "(?m) +(?=\r?\n|`$)", ""
+    $Formatted = $Formatted -replace "(?m)[\t ]+(?=\r?\n|`$)", ""
+    $Formatted = $Formatted -replace "(?<=[\(\[]) +", ""
+    $Formatted = $Formatted -replace " +(?=[\)\]])", ""
+
+    # Remove multiple spaces, those surrounded by tabs and right before semicolons
     $Formatted = $Formatted -replace "(?:(?<=[\t ]) +| +(?=\t))", ""
+    $Formatted = $Formatted -replace "[\t ]+(?=;)", ""
 
     # Because of performance and encoding issues, for the following operations each line must be processed individually
     $Lines = @()

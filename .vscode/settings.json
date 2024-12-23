@@ -1,0 +1,9 @@
+{
+    "[st]": {
+        "files.trimTrailingWhitespace": false,
+        "files.trimFinalNewlines": false,
+        "files.insertFinalNewline": false,
+        "files.encoding": "iso88591",
+        "files.eol": "\r\n"
+    }
+}
