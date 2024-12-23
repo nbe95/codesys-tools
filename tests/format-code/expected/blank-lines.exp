@@ -1,0 +1,72 @@
+VAR
+	no blank lines
+END_VAR
+(* @END_DECLARATION := '0' *)
+
+
+VAR
+	one blank line
+END_VAR
+(* @END_DECLARATION := '0' *)
+
+
+VAR
+	two blank lines
+END_VAR
+(* @END_DECLARATION := '0' *)
+
+
+TYPE foo :
+STRUCT
+	no blank lines
+END_STRUCT
+END_TYPE
+(* @OBJECT_END := 'foo' *)
+
+
+TYPE foo :
+STRUCT
+	one blank line
+END_STRUCT
+END_TYPE
+(* @OBJECT_END := 'foo' *)
+
+
+TYPE foo :
+STRUCT
+	two blank lines
+END_STRUCT
+END_TYPE
+(* @OBJECT_END := 'foo' *)
+
+
+FUNCTION
+	no blank line
+END_FUNCTION
+
+
+FUNCTION
+	one blank line (allowed)
+
+END_FUNCTION
+
+
+FUNCTION
+	two blank lines
+END_FUNCTION
+
+
+FUNCTION
+	three blank lines
+END_FUNCTION
+
+
+FUNCTION
+	four blank lines
+END_FUNCTION
+
+
+---v--- max blank lines ---v---
+
+
+---^--- max blank lines ---^---
