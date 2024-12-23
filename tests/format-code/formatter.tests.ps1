@@ -15,7 +15,7 @@ Describe "Test file - <File>" {
         Copy-Item -Path $File -Destination $TmpFile
     }
 
-    It "Run and check formatter result" {
+    It "Formatter result" {
         PowerShell $Cmd $TmpFile | Out-Host
 
         $Result = Get-Content -Path $TmpFile -Raw

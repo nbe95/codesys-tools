@@ -7,15 +7,17 @@ BeforeAll {
             [string] $Var,
             [string] $Msg,
             [string] $Actual,
-            [string] $Expected,
+            [string[]] $Expected = @(),     # if present, all items must match
             [string] $Keyword
         )
         foreach ($Line in $Input) {
-            if ($Line -Match "(?m)^\[\s*(?<cls>\w+)\s*\] (?<file>.+): (?<var>.+) - (?<msg>.*?)(?: expected: (?<exp>.+?))?(?:, actual: (?<act>.+?))?$") {
-                if ((-not $Class        -or $Matches["cls"] -eq $Class) -and `
-                    (-not $Var          -or $Matches["var"] -eq $Var) -and `
-                    (-not $Actual       -or $Matches["act"] -eq $Actual) -and `
-                    (-not $Expected     -or $Matches["exp"] -eq $Expected) -and `
+            if ($Line -Match "(?mi)^\[\s*(?<cls>\w+)\s*\] (?<file>.+): (?<var>.+) - (?<msg>.*?)(?: expected: (?<exp>.+?))?(?:, actual: (?<act>.+?))?`$") {
+                $ExpArray = $Matches["exp"] -split ", "
+                $ExpAreEqual = @(Compare-Object $Expected $ExpArray -SyncWindow 0).Length -eq 0
+                if ((-not $Class        -or $Class -eq $Matches["cls"]) -and
+                    (-not $Var          -or $Var -eq $Matches["var"]) -and `
+                    (-not $Actual       -or $Actual -eq $Matches["act"]) -and `
+                    (-not $Expected     -or $ExpAreEqual) -and `
                     (-not $Keyword      -or $Matches["msg"] -like "*$Keyword*")) {
                     return $Line
                 }
@@ -28,11 +30,10 @@ BeforeAll {
     $InputDir = Resolve-Path -Relative "$PSScriptRoot\input"
 }
 
-Describe "Run and check declaration checker" {
+Describe "Check declaration checker" {
 
-    It "Check basic type declarations" {
-
-        PowerShell $Cmd "$InputDir\basic-types.exp" | Tee-Object -Variable Output | Out-Host
+    It "Basic declaration parsing and deduction" {
+        PowerShell $Cmd "$InputDir\types.exp" | Tee-Object -Variable Output | Out-Host
 
         $Output | FindEntry -Class "ERROR" -Var "Nothing" -Expected "x" -Keyword "missing" | Should -Not -BeNullOrEmpty
         $Output | FindEntry -Class "ERROR" -Var "_Underscore" -Expected "x" -Keyword "missing" | Should -Not -BeNullOrEmpty
@@ -61,5 +62,19 @@ Describe "Run and check declaration checker" {
         $Output | FindEntry -Class "ERROR" -Var "q_String1" -Actual "q" -Expected "s" | Should -Not -BeNullOrEmpty
         $Output | FindEntry -Class "ERROR" -Var "q_String2" -Actual "q" -Expected "s" | Should -Not -BeNullOrEmpty
         $Output | FindEntry -Class "ERROR" -Var "q_String3" -Actual "q" -Expected "s" | Should -Not -BeNullOrEmpty
+    }
+
+    It "Context evaluation" {
+        PowerShell $Cmd "$InputDir\context.exp" | Tee-Object -Variable Output | Out-Host
+
+        $Output | FindEntry -Class "ERROR" -Var "Var" -Expected "x" | Should -Not -BeNullOrEmpty
+        $Output | FindEntry -Class "ERROR" -Var "Input" -Expected "x" | Should -Not -BeNullOrEmpty
+        $Output | FindEntry -Class "ERROR" -Var "Output" -Expected "x" | Should -Not -BeNullOrEmpty
+        $Output | FindEntry -Class "ERROR" -Var "InOut" -Expected "x" | Should -Not -BeNullOrEmpty
+        $Output | FindEntry -Class "ERROR" -Var "External" -Expected "gx", "G_x", "GS_x" | Should -Not -BeNullOrEmpty
+        $Output | FindEntry -Class "ERROR" -Var "Global" -Expected "gx", "G_x", "GS_x" | Should -Not -BeNullOrEmpty
+        $Output | FindEntry -Class "ERROR" -Var "Constant" -Expected "cx" | Should -Not -BeNullOrEmpty
+        $Output | FindEntry -Class "ERROR" -Var "Retain" -Expected "x" | Should -Not -BeNullOrEmpty
+        $Output | FindEntry -Class "ERROR" -Var "RetainPersistent" -Expected "x" | Should -Not -BeNullOrEmpty
     }
 }

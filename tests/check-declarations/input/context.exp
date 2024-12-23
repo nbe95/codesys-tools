@@ -1,0 +1,35 @@
+VAR
+    Var: BOOL;
+END_VAR
+
+VAR_INPUT
+    Input: BOOL;
+END_VAR
+
+VAR_OUTPUT
+    Output: BOOL;
+END_VAR
+
+VAR_IN_OUT
+    InOut: BOOL;
+END_VAR
+
+VAR_EXTERNAL
+    External: BOOL;
+END_VAR
+
+VAR_GLOBAL
+    Global: BOOL;
+END_VAR
+
+VAR CONSTANT
+    Constant: BOOL;
+END_VAR
+
+VAR RETAIN
+    Retain: BOOL;
+END_VAR
+
+VAR RETAIN PERSISTENT
+    RetainPersistent: BOOL;
+END_VAR

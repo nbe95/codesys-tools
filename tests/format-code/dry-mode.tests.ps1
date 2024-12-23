@@ -12,7 +12,7 @@ Describe "Test file - <File>" {
         Copy-Item -Path $File -Destination $TmpFile
     }
 
-    It "Run and check formatter result" {
+    It "Dry run" {
         PowerShell $Cmd $TmpFile -Dry | Out-Host
 
         $Result = Get-Content -Path $TmpFile -Raw
