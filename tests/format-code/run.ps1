@@ -2,7 +2,7 @@ Remove-Item -Recurse -Path "$PSScriptRoot\tmp" -ErrorAction SilentlyContinue
 New-Item -Type Directory -Path "$PSScriptRoot\tmp" | Out-Null
 
 $Files = Get-ChildItem -Path "$PSScriptRoot\input" -Filter "*.exp" -Recurse
-$Data = $Files | ForEach-Object {
+$Data = $Files | Sort-Object | ForEach-Object {
     @{ File = $_.FullName }
 }
 

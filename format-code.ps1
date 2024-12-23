@@ -17,6 +17,7 @@ Function Format-CodesysFile {
         Return [Result]::Ignored
     }
 
+    $NewLine = [Environment]::NewLine
     $Formatted = $Content
 
     # Eliminate nested comments (repeat until all are done)
@@ -27,14 +28,14 @@ Function Format-CodesysFile {
     } until ($Formatted -eq $Before)
 
     # Enforce spaces around operators :=, =>, <=, >=, <>, =, <, > (unless part of arrows)
-    $Formatted = $Formatted -replace ' *(:=|(?<!=|<)=>|<=(?!=|>)|>=|<>|(?<!=)=(?!=|>)|<(?!=|-)|(?<!=|-)>) *', ' $1 '
+    $Formatted = $Formatted -replace ' *(:=|(?<!=|<)=>|<=(?!=|>)|>=|<>|(?<!=)=(?!=|>)|<(?!=|-)|(?<!=|-)>) *', " `$1 "
 
     # Enforce spaces before and after arithmetical operators (unless part of arrows, comments or strings)
     # Note: Find and mark relevant chars first, then replace them in a second step
-    $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?')|[\t ]*\+[\t ]*", '$1{plus}'
-    $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?'|#[\d\-_:]+)|(?<=\w)[\t ]*\-(?!>|-)[\t ]*", '$1{minus}' # allow minus prefix (e.g. -1) and in constructed types like DT#0000-00-00:00:00:00
-    $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?')|[\t ]*\*[\t ]*", '$1{asterisk}'
-    $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?')|[\t ]*\/[\t ]*", '$1{slash}'
+    $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?')|[\t ]*\+[\t ]*", "`$1{plus}"
+    $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?'|#[\d\-_:]+)|(?<=\w)[\t ]*\-(?!>|-)[\t ]*", "`$1{minus}" # allow minus prefix (e.g. -1) and in constructed types like DT#0000-00-00:00:00:00
+    $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?')|[\t ]*\*[\t ]*", "`$1{asterisk}"
+    $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?')|[\t ]*\/[\t ]*", "`$1{slash}"
 
     $Formatted = $Formatted -replace "(?s)(\(\*.*?\*\)|'.*?'|#[\d\-_:]+)(?:{(?:plus|minus|asterisk|slash)})+", '$1'
     $Formatted = $Formatted -replace "{plus}", " + "
@@ -77,15 +78,14 @@ Function Format-CodesysFile {
     }
 
     # Use consistent spacing for UDTs and enumerations
-    $NewLine = [Environment]::NewLine
-    $Formatted = $Formatted -replace "(?s)((?<!\w)TYPE\s+\w+\s*:)\s*\(\*(.*)\*\)\s*(?=\((?!\*)|STRUCT)", "(*`$2*)$NewLine`$1$NewLine" # First, move any inline-comment above type/enum declaration
-    $Formatted = $Formatted -replace "(?s)TYPE\s+(\w+)\s*:\s*(\((?!\*)|STRUCT)[\r\n]*", "TYPE `$1 :$NewLine`$2$NewLine"
-    $Formatted = $Formatted -replace "\s*(\);|END_STRUCT)\s+END_TYPE;?", "$NewLine`$1$NewLineEND_TYPE"
+    $Formatted = $Formatted -replace "(?s)((?<!\w)TYPE\s+\w+\s*:)\s*\(\*(.*?)\*\)\s*(\((?!\*)|STRUCT)\s*", "(*`$2*)$NewLine`$1$NewLine`$3$NewLine" # First, move any inline-comment above type/enum declaration
+    $Formatted = $Formatted -replace "(?s)TYPE\s+(\w+)\s*?:\s*(\((?!\*)|STRUCT)\s*", "TYPE `$1 :$NewLine`$2$NewLine"
+    $Formatted = $Formatted -replace "\s*(\)\s*;|END_STRUCT)\s+END_TYPE;?", "$NewLine`$1$($NewLine)END_TYPE"
 
     # Remove empty VAR blocks
     $Formatted = $Formatted -replace "(?m)^VAR([^\n]+)?\n\s*END_VAR\r?\n?", ""
 
-    # Use at least one tab for indentation within any VAR/TYPE/STRUCT block
+    # Enforce trivial format within any VAR/TYPE/STRUCT block
     Select-String -InputObject $Formatted -Pattern "(?smi)^(?<container>VAR|TYPE)(?:_\w+)?.*?[\r\n]+(?:\s*(?:STRUCT|\((?!\*))[\r\n]*)?(?<content>.+?)\s*(?:\s*(?:END_STRUCT|\)\s*;)\s*)?^END_\<container>" -AllMatches | ForEach-Object {
 
         # Note: Last match must be processed first, because results may get manipulated in place
@@ -95,18 +95,26 @@ Function Format-CodesysFile {
         $Matches | ForEach-Object {
             $Block = $_.Groups["content"]
             if ($Block.Length) {
-                $Indented = $Block.Value -replace "(?m)^\t?(.*)`$", "`t`$1"
+                $BlockFormatted = $Block.Value
+
+                # Only one enum definition per line
+                $BlockFormatted = $BlockFormatted -replace "(\(\*.*?\*\))|,(?:\r?\n)?", "`$1{comma}"
+                $BlockFormatted = $BlockFormatted -replace "(?s)(\(\*.*?\*\)){comma}", "`$1"
+                $BlockFormatted = $BlockFormatted -replace "{comma}", ",`t$NewLine"
+
+                # Apply at least one tab of indentation
+                $BlockFormatted = $BlockFormatted -replace "(?m)^\t?(.*)`$", "`t`$1"
 
                 # Replace actual block by position and length
-                $Formatted = $Formatted.Remove($Block.Index, $Block.Length).Insert($Block.Index, $Indented)
+                $Formatted = $Formatted.Remove($Block.Index, $Block.Length).Insert($Block.Index, $BlockFormatted)
             }
         }
     }
 
     # Remove leading/trailing space, spaces in round/square brackets and those before semicolons
     $Formatted = $Formatted -replace "(?m)^ +", ""
-    $Formatted = $Formatted -replace "(?m) +`$", ""
-    $Formatted = $Formatted -replace "(?m)[\t ]+`$", ""
+    $Formatted = $Formatted -replace "(?m) +(?=\r?\n)", ""
+    $Formatted = $Formatted -replace "(?m)[\t ]+(?=\r?\n)", ""
     $Formatted = $Formatted -replace "(?<=[\(\[]) +", ""
     $Formatted = $Formatted -replace " +(?=[\)\]])", ""
     $Formatted = $Formatted -replace "[\t ]+(?=;)", ""
@@ -134,7 +142,7 @@ Function Format-CodesysFile {
             $Lines += $_
         }
     }
-    $Formatted = $Lines -join [Environment]::NewLine
+    $Formatted = $Lines -join $NewLine
     Remove-Variable Lines
 
     # Check if anything was modified
