@@ -9,7 +9,7 @@ on:
       - ready_for_review
 
 jobs:
-  check-sh:
+  check-bash:
     name: Check shell code
     runs-on: ubuntu-latest
     steps:
@@ -17,7 +17,7 @@ jobs:
       - name: Run shellcheck
         uses: ludeeus/action-shellcheck@master
 
-  check-ps:
+  check-pwsh:
     name: Analyze PowerShell code
     runs-on: windows-latest
     steps:
@@ -29,7 +29,7 @@ jobs:
           recurse: true
           output: results.sarif
 
-  test-ps:
+  test-pwsh:
     name: Run PowerShell tests
     runs-on: windows-latest
     steps:
@@ -42,3 +42,17 @@ jobs:
         shell: pwsh
         run: |
           .\tests\format-code\run.ps1
+      - name: Run tests for tmp file remover
+        shell: pwsh
+        run: |
+          .\tests\remove-tmp-files\pwsh\run.ps1
+
+  test-bash:
+    name: Run bash unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Run tests for tmp file remover
+        run: ./tests/remove-tmp-files/bash/run.sh
