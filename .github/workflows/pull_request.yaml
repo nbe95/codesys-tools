@@ -16,6 +16,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run shellcheck
         uses: ludeeus/action-shellcheck@master
+        env:
+          SHELLCHECK_OPTS: -e SC1090,SC1091
 
   check-pwsh:
     name: Analyze PowerShell code
@@ -48,7 +50,7 @@ jobs:
           .\tests\remove-tmp-files\pwsh\run.ps1
 
   test-bash:
-    name: Run bash unit tests
+    name: Run bash tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

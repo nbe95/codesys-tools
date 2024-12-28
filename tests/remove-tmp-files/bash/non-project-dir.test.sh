@@ -3,6 +3,6 @@
 echo "Test on non-project directory"
 set_up
 
-$cmd "$tmp_dir/dir_a" || true
+$CMD "$TMP_DIR/dir_a" || true
 
-assert_exists "$tmp_dir/dir_a/foo.txt"
+assert_exists "$TMP_DIR/dir_a/foo.txt"
