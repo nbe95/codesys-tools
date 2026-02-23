@@ -1,0 +1,16 @@
+STRING
+STRING[80]
+STRING(120)
+STRING[ci_foo]
+
+STRING
+STRING     [  80  ]
+STRING     (  120  )
+STRING  [  const  ]
+
+ARRAY[1..2]
+ARRAY  [  1 .. 2, 3..4   ]
+ARRAY  [  const1 .. const2]
+
+INT_TO_STRING(42)
+CONVERTMYARRAY(69)

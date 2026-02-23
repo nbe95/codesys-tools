@@ -1,0 +1,71 @@
+foo:=bar=>baz<=foobar>=foo<>bar=baz<foobar>foooo
+foo+bar-baz*foobar/foo
+arrow->arrow-->arrow
+arrow<-arrow<--arrow
+arrow<->arrow<-->arrow
+arrow==>arrow
+arrow<==arrow
+arrow<=>arrow<==>arrow
+(* comment+comment-comment*comment/comment *)
+'string+string-string*string/string'
+'adjacent-string' adjacent-string 'adjacent-string'
+
+foo :=bar =>baz <=foobar >=foo <>bar =baz <foobar >foooo
+foo +bar -baz *foobar /foo
+arrow ->arrow -->arrow
+arrow <-arrow <--arrow
+arrow <->arrow <-->arrow
+arrow ==>arrow
+arrow <==arrow
+arrow <=>arrow <==>arrow
+(* comment +comment -comment *comment /comment *)
+'string +string -string *string /string'
+'adjacent -string' adjacent -string 'adjacent -string'
+
+foo:= bar=> baz<= foobar>= foo<> bar= baz< foobar> foooo
+foo+ bar- baz* foobar/ foo
+arrow-> arrow--> arrow
+arrow<- arrow<-- arrow
+arrow<-> arrow<--> arrow
+arrow==> arrow
+arrow<== arrow
+arrow<=> arrow<==> arrow
+(* comment+ comment- comment* comment/ comment *)
+'string+ string- string* string/ string'
+'adjacent- string' adjacent- string 'adjacent- string'
+
+foo := bar => baz <= foobar >= foo <> bar = baz < foobar > foooo
+foo + bar - baz * foobar / foo
+arrow -> arrow --> arrow
+arrow <- arrow <-- arrow
+arrow <-> arrow <--> arrow
+arrow ==> arrow
+arrow <== arrow
+arrow <=> arrow <==> arrow
+(* comment + comment - comment * comment / comment *)
+'string + string - string * string / string'
+'adjacent - string' adjacent - string 'adjacent - string'
+
+foo  :=  bar  =>  baz  <=  foobar  >=  foo  <>  bar  =  baz  <  foobar  >  foooo
+foo  +  bar  -  baz  *  foobar  /  foo
+arrow  ->  arrow  -->  arrow
+arrow  <-  arrow  <--  arrow
+arrow  <->  arrow  <-->  arrow
+arrow  ==>  arrow
+arrow  <==  arrow
+arrow  <=>  arrow  <==>  arrow
+
+(* multi-line-
+-comment *)
+'multi-line-
+-string'
+
+DT#1995-09-06-00:00:00
+-1
+-1-2
+-1-(-2)
+1-2
+-foo
+-foo-bar
+-foo-(-bar)
+foo-bar

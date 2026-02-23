@@ -1,0 +1,63 @@
+-
+
+--
+
+----
+
+----
+
+|
+
+-
+
+-	-
+
+-	-	-
+
+-	-	-	-
+
+				|
+
+foo
+bar
+baz
+foobar
+foooo
+
+foo bar baz foobar foooo
+
+foo
+	bar
+		baz
+			foobar
+				foooo
+
+foo	bar		baz		foobar			foooo
+
+(foo)
+(bar)
+(baz)
+(foo bar)
+(foo baz)
+
+[foo]
+[bar]
+[baz]
+[foo bar]
+[foo baz]
+
+(foo)
+	(	bar	)
+		(		baz		)
+			(			foo			bar			)
+				(				foo			baz				)
+
+[foo]
+	[	bar	]
+		[		baz		]
+			[			foo			bar			]
+				[				foo			baz				]
+
+foo; foo; foo; foo; foo;
+foo;	foo;	foo;	foo;	foo;
+foo; foo;	foo; foo;

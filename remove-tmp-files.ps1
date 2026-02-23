@@ -9,7 +9,7 @@ $ProjectDirs = $ProjectFiles | ForEach-Object { $_.DirectoryName } | Get-Unique
 
 foreach ($ProjectDir in $ProjectDirs) {
 
-    # Find temporary files in each projectdirectory
+    # Find temporary files in each project directory
     $TmpFiles = Get-ChildItem -Path $ProjectDir | Where-Object { $_.Name -match "^(?:DEFAULT\.DFR|.+\.(?:opt|backup|lock|~u))$" }
     if ($TmpFiles) {
         Write-Host $ProjectDir -ForegroundColor "White"

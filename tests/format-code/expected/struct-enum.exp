@@ -1,0 +1,34 @@
+(* comment above *)
+(* type comment *)
+TYPE struct :
+STRUCT
+	(* struct comment *)
+	foo				(* inline comment *)
+	bar
+
+		baz
+			(* foobar *)
+END_STRUCT
+END_TYPE
+
+TYPE enum :
+(
+	FOO := 1,
+	BAR (* this is bar *),
+		(* this is *) SPARTA = 300 (* !!! *),
+	fooo
+);
+END_TYPE
+
+(* foo *)
+TYPE enum :
+(
+	(* bar *)
+	foo,
+	bar,
+		baz := 3,
+
+			(* hi *)
+);
+END_TYPE
+(* comment below *)

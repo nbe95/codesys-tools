@@ -22,7 +22,7 @@ done
 shift $((OPTIND - 1))
 
 # Directory provided? If not, use current directory
-if [[ -n "$dir" ]]; then
+if [[ -n "$1" ]]; then
     dir="$(realpath "$1")"
 else
     dir="$(pwd)"

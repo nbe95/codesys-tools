@@ -1,0 +1,45 @@
+VAR
+    Nothing         : BOOL;
+    _Underscore     : BOOL;
+    Invalid         : INVALID;
+
+    x_Bool          : BOOL;
+    y_Bool          : BOOL;
+
+    by_Byte         : BYTE;
+    bz_Byte         : BYTE;
+    si_SInt         : SINT;
+    sj_SInt         : SINT;
+    usi_USInt       : USINT;
+    usj_USInt       : USINT;
+
+    w_Word          : WORD;
+    v_Word          : WORD;
+    i_Int           : INT;
+    j_Int           : INT;
+    ui_UInt         : UINT;
+    uj_UInt         : UINT;
+
+    dw_DWord        : DWORD;
+    dv_DWord        : DWORD;
+    di_DInt         : DINT;
+    dj_DInt         : DINT;
+    udi_UDInt       : UDINT;
+    udj_UDInt       : UDINT;
+
+    tim_Time        : TIME;
+    tom_Time        : TIME;
+    d_Date          : DATE;
+    c_Date          : DATE;
+    tod_TimeOfDay   : TIME_OF_DAY;
+    toy_TimeOfDay   : TIME_OF_DAY;
+    dt_DateTime     : DATE_AND_TIME;
+    du_DateTime     : DATE_AND_TIME;
+
+    s_String1       : STRING;
+    s_String2       : STRING[80];
+    s_String3       : STRING(80);
+    q_String1       : STRING;
+    q_String2       : STRING[80];
+    q_String3       : STRING(80);
+END_VAR

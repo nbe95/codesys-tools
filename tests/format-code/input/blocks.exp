@@ -1,0 +1,31 @@
+VAR
+	a
+		b
+			c
+			(* d *)
+e
+(* comment *)
+END_VAR
+VAR CONSTANT
+END_VAR
+VAR_GLOBAL RETAIN
+foo
+END_VAR
+VAR_INPUT PERSISTENT
+
+			foo
+END_VAR
+VAR_OUTPUT
+			foo
+END_VAR
+VAR_IN_OUT CONSTANT
+
+
+	x
+END_VAR
+VAR EXTERNAL
+
+
+
+
+END_VAR

@@ -1,0 +1,33 @@
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+(* comment *)
+
+(* nested comment in comment nested *)
+before(* nested comment
+across multi lines *)after
+
+(* multi
+line comment
+
+with spaces
+			and	tabs *)
