@@ -86,7 +86,17 @@ Function Format-CodesysFile {
     $Formatted = $Formatted -replace "(?m)^VAR([^\n]+)?\n\s*END_VAR\r?\n?", ""
 
     # Enforce trivial format within any VAR/TYPE/STRUCT block
-    Select-String -InputObject $Formatted -Pattern "(?smi)^(?<container>VAR|TYPE)(?:_\w+)?.*?[\r\n]+(?:\s*(?:STRUCT|\((?!\*))[\r\n]*)?(?<content>.+?)\s*(?:\s*(?:END_STRUCT|\)\s*;)\s*)?^END_\<container>" -AllMatches | ForEach-Object {
+    $ExtractRegex = '(?smi)' +
+        '^(?<container>VAR|TYPE)(?:_\w+)?(?:\s+\w+)?(?:\s*:\s*)?\s*[\r\n]+' +       # Header + optional name + :
+        '(?:' +
+            '(?:\s*STRUCT\s*[\r\n]+(?<content>.*?)\s*END_STRUCT\s*;?\s*[\r\n]+)' +  # Case A: Struct
+            '|' +
+            '(?:\s*(?<enum>\(\s*[\r\n]+(?<content>.*?)\s*\))\s*;\s*[\r\n]+)' +      # Case B: Enum
+            '|' +
+            '(?<content>.*?)\s*' +                                                  # Case C: Var
+        ')' +
+        '(?=^\s*END_\k<container>)'
+    Select-String -InputObject $Formatted -Pattern $ExtractRegex -AllMatches | ForEach-Object {
 
         # Note: Last match must be processed first, because results may get manipulated in place
         $Matches = $_.Matches
@@ -97,12 +107,15 @@ Function Format-CodesysFile {
             if ($Block.Length) {
                 $BlockFormatted = $Block.Value
 
-                # Only one enum definition per line
-                $BlockFormatted = $BlockFormatted -replace "(\(\*.*?\*\))|,(?:\r?\n)?", "`$1{comma}"
-                $BlockFormatted = $BlockFormatted -replace "(?s)(\(\*.*?\*\)){comma}", "`$1"
-                $BlockFormatted = $BlockFormatted -replace "{comma}", ",`t$NewLine"
+                # Only one enum definition per line (ignore comments and parentheses)
+                if ($_.Groups["enum"].Success) {
+                    $NestedParentheses = '\((?>[^()]+|(?<open>\()|(?<-open>\)))+(?(open)(?!))\)'
+                    $BlockFormatted = [regex]::Replace($BlockFormatted, "(\(\*.*?\*\))|($NestedParentheses)|(?<comma>,(?:\r?\n)?)", {
+                        if ($args[0].Groups["comma"].Success) { ",`t$NewLine" } else { $args[0].Value }
+                    })
+                }
 
-                # Apply at least one tab of indentation
+                # Ensure at least one tab of indentation
                 $BlockFormatted = $BlockFormatted -replace "(?m)^\t?(.*)`$", "`t`$1"
 
                 # Replace actual block by position and length
@@ -113,7 +126,9 @@ Function Format-CodesysFile {
 
     # Remove superfluous line breaks
     $Formatted = $Formatted -replace "(\r?\n)+(\(\* @(?:END_DECLARATION|OBJECT_END) .+? \*\))", "`$1`$2"
+    $Formatted = $Formatted -replace "((?<!END_)(?:VAR|TYPE)(?:_\w+)?.*?)(\r?\n)+", "`$1`$2"
     $Formatted = $Formatted -replace "(\r?\n)+(END_(?:VAR|TYPE))", "`$1`$2"
+    $Formatted = $Formatted -replace "((?<!END_)(?:PROGRAM|FUNCTION_BLOCK|FUNCTION))(\r?\n)+", "`$1`$2"
     $Formatted = $Formatted -replace "(\r?\n){3,}(END_(?:PROGRAM|FUNCTION_BLOCK|FUNCTION))", "`$1`$2"
     $Formatted = $Formatted -replace "((?:\r?\n){3})(?:\r?\n)+", "`$1"
 
