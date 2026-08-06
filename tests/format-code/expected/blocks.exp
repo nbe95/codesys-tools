@@ -10,14 +10,12 @@ VAR_GLOBAL RETAIN
 	foo
 END_VAR
 VAR_INPUT PERSISTENT
-
 			foo
 END_VAR
 VAR_OUTPUT
 			foo
 END_VAR
 VAR_IN_OUT CONSTANT
-
-
-	x
+	x : SaneStruct			:= (a := 42,		b := 69);
+	x : WyldStruct			:= (a := 42,		b := (69 + 42));
 END_VAR

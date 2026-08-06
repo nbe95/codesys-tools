@@ -21,3 +21,9 @@ foo,
 			);
 END_TYPE
 (* comment below *)
+
+TYPE foo:
+STRUCT
+	bar: SomeSequence := 0, 42, 69;
+END_STRUCT;
+END_TYPE
