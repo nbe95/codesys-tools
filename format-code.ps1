@@ -44,8 +44,15 @@ Function Format-CodesysFile {
     $Formatted = $Formatted -replace "{slash}", " / "
 
     # Open and close comments with a single space
-    $Formatted = $Formatted -replace "(?s)\(\*(?!`$)\s*", "(* "
-    $Formatted = $Formatted -replace "(?s)\s*(?<!^)\*\)", " *)"
+    $Formatted = [regex]::Replace($Formatted, '(?s)\(\*(.*?)\*\)', {
+        param($Match)
+        $Content = $Match.Groups[1].Value
+        if ($Content -match '^\s*@') { # ignore system comments (first value preceded by an @)
+            $Match.Value
+        } else {
+            "(* " + $Content.Trim() + " *)"
+        }
+    })
 
     # Remove unnecessary semicolons after specific keywords
     $Formatted = $Formatted -replace "(?<=THEN|END_IF|END_FOR|END_WHILE|END_REPEAT|END_CASE)\s*?;", ""
