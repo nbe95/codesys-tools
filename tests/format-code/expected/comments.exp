@@ -31,3 +31,12 @@ line comment
 
 with spaces
 			and	tabs *)
+
+(* test 1 variables *)
+
+(* test 2 variables *)
+
+(*
+@SYSTEMCOMMENT
+SOMESTUFF
+*)
