@@ -132,11 +132,11 @@ Function Format-CodesysFile {
     }
 
     # Remove superfluous line breaks
-    $Formatted = $Formatted -replace "(\r?\n)+(\(\* @(?:END_DECLARATION|OBJECT_END) .+? \*\))", "`$1`$2"
-    $Formatted = $Formatted -replace "((?<!END_)(?:VAR|TYPE)(?:_\w+)?.*?)(\r?\n)+", "`$1`$2"
-    $Formatted = $Formatted -replace "(\r?\n)+(END_(?:VAR|TYPE))", "`$1`$2"
-    $Formatted = $Formatted -replace "((?<!END_)(?:PROGRAM|FUNCTION_BLOCK|FUNCTION))(\r?\n)+", "`$1`$2"
-    $Formatted = $Formatted -replace "(\r?\n){3,}(END_(?:PROGRAM|FUNCTION_BLOCK|FUNCTION))", "`$1`$2"
+    $Formatted = $Formatted -replace "(\r?\n)+(\(\* @\b(?:END_DECLARATION|OBJECT_END)\b .+? \*\))", "`$1`$2"
+    $Formatted = $Formatted -replace "((?<!END_)\b(?:VAR|TYPE)(?:_\w+)?\b.*?)(\r?\n)+", "`$1`$2"
+    $Formatted = $Formatted -replace "(\r?\n)+(\bEND_(?:VAR|TYPE)\b)", "`$1`$2"
+    $Formatted = $Formatted -replace "((?<!END_)\b(?:PROGRAM|FUNCTION_BLOCK|FUNCTION)\b)(\r?\n)+", "`$1`$2"
+    $Formatted = $Formatted -replace "(\r?\n){3,}(\bEND_(?:PROGRAM|FUNCTION_BLOCK|FUNCTION)\b)", "`$1`$2"
     $Formatted = $Formatted -replace "((?:\r?\n){3})(?:\r?\n)+", "`$1"
 
     # Remove leading/trailing space, spaces in round/square brackets
