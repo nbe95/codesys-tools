@@ -1,0 +1,18 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "group:all"
+  ],
+  "dependencyDashboard": false,
+  "assignees": ["nbe95"],
+  "labels": ["patch"],
+  "packageRules": [
+    {
+      // Auto-merge non-breaking changes
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true,
+      "automergeType": "pr"
+    }
+  ]
+}
