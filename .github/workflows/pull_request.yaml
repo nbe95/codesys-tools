@@ -13,7 +13,7 @@ jobs:
     name: Check shell code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Run shellcheck
         uses: ludeeus/action-shellcheck@master
         env:
@@ -23,9 +23,9 @@ jobs:
     name: Analyze PowerShell code
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Run PSScriptAnalyzer
-        uses: microsoft/psscriptanalyzer-action@v1.0
+        uses: microsoft/psscriptanalyzer-action@v1.1
         with:
           path: .\
           recurse: true
@@ -35,7 +35,7 @@ jobs:
     name: Run PowerShell tests
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Run tests for declaration checker
         shell: pwsh
         run: |
@@ -53,7 +53,7 @@ jobs:
     name: Run bash tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: true
       - name: Run tests for tmp file remover
